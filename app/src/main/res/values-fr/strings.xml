@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dynamusic</string>
+
+    <!-- General -->
+    <string name="welcome_title">DYNAMUSIC</string>
+    <string name="grant_permission">Accorder l\'autorisation du microphone</string>
+    <string name="permission_denied">Autorisation refusée</string>
+    <string name="settings">Paramètres</string>
+    <string name="back">Retour</string>
+
+    <!-- Page 1: Welcome -->
+    <string name="language_prompt">Choisissez une langue…</string>
+    <string name="intro_text">Bienvenue sur Dynamusic, un outil pour les chanteurs et les instrumentistes, pour aider à l\'apprentissage de la dynamique et du contrôle de la respiration.</string>
+
+    <!-- Page 2: Settings -->
+    <string name="settings_title">Paramètres</string>
+    <string name="theme_colour">Couleur du thème :</string>
+    <string name="calibrate_for">Calibrer pour…</string>
+    <string name="mode_voice">Voix</string>
+    <string name="mode_instruments">Instruments</string>
+    <string name="mode_percussion">Percussion</string>
+    <string name="mode_manual">Manuel</string>
+    <string name="voice_desc">Idéal pour les chanteurs</string>
+    <string name="instr_desc">Pour les vents, les cordes, etc.</string>
+    <string name="perc_desc">Batterie &amp; impact</string>
+    <string name="manual_desc">Définissez vos propres niveaux de décibels.\nCeux-ci seront ajoutés au niveau ambiant moyen.</string>
+    <string name="manual_mode_text">MODE MANUEL</string>
+    <string name="set_button">Régler</string>
+    <string name="color_red">Rouge</string>
+    <string name="color_blue">Bleu</string>
+    <string name="color_purple">Violet</string>
+    <string name="color_orange">Orange</string>
+
+    <!-- Page 3: Dynamics -->
+    <string name="dynamics_title">Dynamique</string>
+    <string name="calibrating_text">CALIBRAGE… Veuillez rester silencieux.</string>
+    <string name="ambient_start">Niveau de bruit ambiant actuel : %1$s dB\n\n\nAPPUYEZ POUR CALIBRER</string>
+    <string name="ambient_result">Niveau de bruit ambiant : %1$s dB\n\nNiveau ambiant moyen : %2$s\n\n APPUYEZ POUR RECALIBRER</string>
+    <string name="calibration_mode">Calibrage : mode %1$s.</string>
+    <string name="ambient_noise_calibration">Calibrage du bruit ambiant</string>
+    <string name="calibration_instructions">Calibrons le niveau de bruit ambiant. Trouvez un endroit calme et appuyez sur le bouton ci-dessous.</string>
+    <string name="start_calibration">Démarrer le calibrage</string>
+    <string name="calibrating_message">Calibrage… veuillez patienter.</string>
+    <string name="calibrated_to">Calibré à</string>
+    <string name="set_ambient_level">Définir le niveau ambiant</string>
+
+
+    <!-- Page 4: Breath Control -->
+    <string name="breath_control_title">Contrôle de la respiration</string>
+    <string name="decibels">décibels</string>
+    <string name="seconds">secondes</string>
+    <string name="reset_timer">Réinitialiser le minuteur</string>
+    <string name="breath_control_calibrate_start">Appuyez pour calibrer un\nniveau ambiant moyen</string>
+    <string name="breath_control_calibrate_result">Niveau ambiant moyen : %1$d dB\n   APPUYEZ POUR RECALIBRER</string>
+    <string name="microphone_permission_required">L\'autorisation du microphone est requise pour cette fonctionnalité.</string>
+    <string name="grant_permission_prompt">Nous avons besoin d\'un accès au microphone pour mesurer les niveaux de décibels.</string>
+    <string name="grant_permission_button">Accorder l\'autorisation</string>
+    <string name="timer_display">%1$d secondes</string>
+    <string name="peak_db_display">Pic : %1$d dB</string>
+    <string name="start_timer_button">Démarrer le minuteur</string>
+    <string name="timer_used_button">Minuteur utilisé</string>
+
+</resources>
