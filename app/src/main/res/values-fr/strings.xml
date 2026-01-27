@@ -3,62 +3,59 @@
     <string name="app_name">Dynamusic</string>
 
     <!-- General -->
-    <string name="welcome_title">DYNAMUSIC</string>
+    <string name="welcome_title">SingLong</string>
     <string name="grant_permission">Accorder l\'autorisation du microphone</string>
     <string name="permission_denied">Autorisation refusée</string>
     <string name="settings">Paramètres</string>
-    <string name="back">Retour</string>
+    <string name="settings_button_description">Paramètres</string>
+
 
     <!-- Page 1: Welcome -->
-    <string name="language_prompt">Choisissez une langue…</string>
-    <string name="intro_text">Bienvenue sur Dynamusic, un outil pour les chanteurs et les instrumentistes, pour aider à l\'apprentissage de la dynamique et du contrôle de la respiration.</string>
+    <string name="language_prompt_en">Choose a language…</string>
+    <string name="language_prompt_es">Elige un idioma…</string>
+    <string name="language_prompt_fr">Choisissez une langue…</string>
+    <string name="intro_text">🎶Bienvenue sur SingLong, un outil destiné aux chanteurs pour les aider à apprendre le contrôle de leur respiration.🎶</string>
 
     <!-- Page 2: Settings -->
     <string name="settings_title">Paramètres</string>
-    <string name="theme_colour">Couleur du thème :</string>
-    <string name="calibrate_for">Calibrer pour…</string>
-    <string name="mode_voice">Voix</string>
-    <string name="mode_instruments">Instruments</string>
-    <string name="mode_percussion">Percussion</string>
-    <string name="mode_manual">Manuel</string>
-    <string name="voice_desc">Idéal pour les chanteurs</string>
-    <string name="instr_desc">Pour les vents, les cordes, etc.</string>
-    <string name="perc_desc">Batterie &amp; impact</string>
-    <string name="manual_desc">Définissez vos propres niveaux de décibels.\nCeux-ci seront ajoutés au niveau ambiant moyen.</string>
-    <string name="manual_mode_text">MODE MANUEL</string>
-    <string name="set_button">Régler</string>
-    <string name="color_red">Rouge</string>
-    <string name="color_blue">Bleu</string>
-    <string name="color_purple">Violet</string>
-    <string name="color_orange">Orange</string>
+    <string name="breath_control_description">Entraînez-vous à tenir une note.</string>
+    <string name="information_button">Information</string>
+    <string name="about_singlong">À propos SingLong</string>
+    <string name="notes_content">Remarques:\n- SingLong vous indiquera combien de secondes vous pouvez tenir une note.\n
 
-    <!-- Page 3: Dynamics -->
-    <string name="dynamics_title">Dynamique</string>
-    <string name="calibrating_text">CALIBRAGE… Veuillez rester silencieux.</string>
-    <string name="ambient_start">Niveau de bruit ambiant actuel : %1$s dB\n\n\nAPPUYEZ POUR CALIBRER</string>
-    <string name="ambient_result">Niveau de bruit ambiant : %1$s dB\n\nNiveau ambiant moyen : %2$s\n\n APPUYEZ POUR RECALIBRER</string>
-    <string name="calibration_mode">Calibrage : mode %1$s.</string>
-    <string name="ambient_noise_calibration">Calibrage du bruit ambiant</string>
-    <string name="calibration_instructions">Calibrons le niveau de bruit ambiant. Trouvez un endroit calme et appuyez sur le bouton ci-dessous.</string>
-    <string name="start_calibration">Démarrer le calibrage</string>
-    <string name="calibrating_message">Calibrage… veuillez patienter.</string>
-    <string name="calibrated_to">Calibré à</string>
-    <string name="set_ambient_level">Définir le niveau ambiant</string>
-
+- Le curseur «Plage de décibels» vous permet de choisir une plage de décibels plus ou moins large pour la durée de la note.</string>
 
     <!-- Page 4: Breath Control -->
-    <string name="breath_control_title">Contrôle de la respiration</string>
+    <string name="calibrating_text">CALIBRAGE…Veuillez rester silencieux.</string>
+    <string name="breath_control_title">Controle de la Respiration</string>
     <string name="decibels">décibels</string>
     <string name="seconds">secondes</string>
     <string name="reset_timer">Réinitialiser le minuteur</string>
     <string name="breath_control_calibrate_start">Appuyez pour calibrer un\nniveau ambiant moyen</string>
-    <string name="breath_control_calibrate_result">Niveau ambiant moyen : %1$d dB\n   APPUYEZ POUR RECALIBRER</string>
+    <string name="breath_control_calibrate_result">Niveau ambiant moyen: %1$d dB\n  APPUYEZ POUR RECALIBRER</string>
     <string name="microphone_permission_required">L\'autorisation du microphone est requise pour cette fonctionnalité.</string>
-    <string name="grant_permission_prompt">Nous avons besoin d\'un accès au microphone pour mesurer les niveaux de décibels.</string>
-    <string name="grant_permission_button">Accorder l\'autorisation</string>
-    <string name="timer_display">%1$d secondes</string>
-    <string name="peak_db_display">Pic : %1$d dB</string>
-    <string name="start_timer_button">Démarrer le minuteur</string>
-    <string name="timer_used_button">Minuteur utilisé</string>
+    <string name="slider_medium">4dB</string>
+    <string name="slider_wide">6dB</string>
+    <string name="slider_narrow">2dB</string>
+    <string name="sing_or_hum_prompt">🎶Chantez ou fredonnez une note… Essayez de maintenir le même niveau de décibels.🎶</string>
+    <string name="reset_timer_button">Réinitialiser\nle minuteur</string>
+    <string name="variability_of_your_note">Plage de décibels de votre note</string>
+
+    <!-- About Page -->
+    <string name="about_title">SingLong</string>
+    <string name="about_subtitle">À propos</string>
+    <string name="about_placeholder"> - Version de l\'application: 1.0\n\n
+        - Licenciée sous la licence MIT\n
+
+        - Cette application est gratuite, sans publicité et open source. Elle a été conçue pour aider les chanteurs et musiciens débutants à apprendre et à pratiquer le contrôle de la respiration.
+
+Si vous la trouvez utile et souhaitez soutenir son développement, vous pouvez faire un don. Les contributions sont facultatives, appréciées et permettent de maintenir l\'application gratuite pour tous.\n
+        - Développée et maintenue par JohnRogy.\n
+    </string>
+
+    <string name="support_button">Soutenir</string>
+    <string name="view_button">Voir</string>
+    <string name="support_placeholder">Soutenez le projet sur Liberapay.</string>
+    <string name="view_placeholder">Consultez le code source sur GitHub.</string>
 
 </resources>

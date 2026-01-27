@@ -1,18 +1,21 @@
 package com.example.dynamusic
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -39,10 +42,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -62,18 +62,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -83,58 +79,68 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
-import androidx.core.os.LocaleListCompat
+import androidx.core.net.toUri
+import com.example.dynamusic.ui.theme.DynamusicTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.Locale
 import kotlin.math.log10
-import kotlin.random.Random
+import kotlin.math.roundToInt
+import androidx.compose.foundation.layout.PaddingValues
 
-class MainActivity : AppCompatActivity() {
+@Suppress("DEPRECATION")
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+            DynamusicTheme {
+                // This key will force a recreation of the screen when the language ID changes
+                val configuration = androidx.compose.ui.platform.LocalConfiguration.current
 
-            androidx.compose.runtime.key(configuration.locales.get(0)) {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    PagerScreen(modifier = Modifier.padding(innerPadding))
+                // We use key(configuration.locale) so Compose knows to redraw when locale changes
+                androidx.compose.runtime.key(configuration.locales.get(0)) {
+                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                        PagerScreen(modifier = Modifier.padding(innerPadding))
+                    }
                 }
             }
         }
     }
 
     fun setLocale(languageCode: String) {
-        val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(languageCode)
-        AppCompatDelegate.setApplicationLocales(appLocale)
+        val locale = java.util.Locale(languageCode)
+        java.util.Locale.setDefault(locale)
+
+
+        val config = resources.configuration
+        config.setLocale(locale)
+
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PagerScreen(modifier: Modifier = Modifier) {
+    // 1. Get the Activity Context so we can call setLocale
     val context = LocalContext.current
     val activity = context as? MainActivity
-    val pagerState = rememberPagerState(pageCount = { 5 })
+
+    val pagerState = rememberPagerState(pageCount = { 4 })
     val coroutineScope = rememberCoroutineScope()
 
     var currentThemeColor by remember { mutableStateOf(Color.Red) }
     var selectedMode by remember { mutableStateOf("") }
-    var selectedLanguage by rememberSaveable { mutableStateOf("") }
-    val manualDbLevels = remember {
-        mutableStateMapOf(
-            "pp" to 10f, "p" to 10f, "mp" to 10f,
-            "mf" to 10f, "f" to 10f, "ff" to 10f
-        )
-    }
 
-    val ambientDbLevel by remember { mutableFloatStateOf(60f) }
+    // Shared Language State
+    var selectedLanguage by remember { mutableStateOf("") }
 
+    // Animation state for the fade transition
     val overlayAlpha = remember { androidx.compose.animation.core.Animatable(0f) }
 
     fun smoothNavigateTo(pageIndex: Int) {
@@ -145,15 +151,6 @@ fun PagerScreen(modifier: Modifier = Modifier) {
         }
     }
 
-    LaunchedEffect(selectedLanguage) {
-        if (selectedLanguage.isNotEmpty()) {
-            delay(6000)
-            if (pagerState.currentPage == 0) {
-                smoothNavigateTo(1)
-            }
-        }
-    }
-
     Box(modifier = modifier.fillMaxSize()) {
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page: Int ->
             when (page) {
@@ -161,41 +158,36 @@ fun PagerScreen(modifier: Modifier = Modifier) {
                     themeColor = currentThemeColor,
                     selectedLanguage = selectedLanguage,
                     onLanguageSelected = { languageName ->
+
+                        // 1. Update the UI state button selection
                         selectedLanguage = languageName
+
+                        // 2. Determine the language code
                         val code = when (languageName) {
                             "Español" -> "es"
                             "Français" -> "fr"
                             else -> "en"
                         }
+
+                        // 3. Call the helper function in MainActivity to switch resources
                         activity?.setLocale(code)
+                        smoothNavigateTo(1)
                     }
                 )
                 1 -> SecondPageScreen(
                     selectedThemeColor = currentThemeColor,
-                    onThemeSelected = { newColor -> currentThemeColor = newColor },
                     selectedMode = selectedMode,
                     onModeSelected = { newMode -> selectedMode = newMode },
-                    onNextClick = { smoothNavigateTo(2) },
-                    onSetManualLevels = {
-                        smoothNavigateTo(4)
-                    },
-                    onBreathControlClick = { smoothNavigateTo(3) }
+                    onBreathControlClick = { smoothNavigateTo(2) },
+                    onAboutClick = { smoothNavigateTo(3) }
                 )
-                2 -> ThirdPageScreen(
-                    themeColor = currentThemeColor,
-                    selectedMode = selectedMode,
-                    manualDbLevels = manualDbLevels,
-                    onNextClick = { smoothNavigateTo(3) }
-                )
-                3 -> FourthPageScreen(
+                2 -> FourthPageScreen(
                     selectedThemeColor = currentThemeColor,
-                    onSettingsClick = { smoothNavigateTo(1) },
-                    ambientDbLevel = ambientDbLevel
+                    onSettingsClick = { smoothNavigateTo(1) }
                 )
-                4 -> ManualLevelsEditor(
-                    manualDbLevels = manualDbLevels,
-                    themeColor = currentThemeColor,
-                    onSetClick = { smoothNavigateTo(3) }
+                3 -> AboutScreen(
+                    selectedThemeColor = currentThemeColor,
+                    onSettingsClick = { smoothNavigateTo(1) }
                 )
             }
         }
@@ -214,65 +206,21 @@ fun PagerScreen(modifier: Modifier = Modifier) {
 fun FirstPageScreen(
     themeColor: Color,
     selectedLanguage: String,
-    onLanguageSelected: (String) -> Unit) {
-    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp
-    val screenHeight = configuration.screenHeightDp
-
-    val randomSymbols = remember {
-        val options = listOf("pianissimo", "piano", "mezzo-piano", "mezzo-forte", "forte", "fortissimo")
-        val safeZoneWidth = screenWidth * 1.0
-        val safeZoneHeight = screenHeight * 0.7
-        val symbols = mutableListOf<SymbolData>()
-
-        repeat(15) {
-            var xOffset: Int
-            var yOffset: Int
-            var safetyCheckCounter = 0
-            do {
-                xOffset = Random.nextInt(-screenWidth / 2, screenWidth / 2)
-                yOffset = Random.nextInt(-screenHeight / 2, screenHeight / 2)
-                val inSafeZoneX = xOffset > -safeZoneWidth / 2 && xOffset < safeZoneWidth / 2
-                val inSafeZoneY = yOffset > -safeZoneHeight / 2 && yOffset < safeZoneHeight / 2
-                safetyCheckCounter++
-            } while (inSafeZoneX && inSafeZoneY && safetyCheckCounter < 50)
-
-            symbols.add(
-                SymbolData(
-                    text = options.random(),
-                    xOffset = xOffset,
-                    yOffset = yOffset,
-                    rotation = Random.nextFloat() * 360f,
-                    size = Random.nextInt(15, 40),
-                    color = Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 0.5f)
-                )
-            )
-        }
-        symbols.toList()
-    }
-
+    onLanguageSelected: (String) -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        randomSymbols.forEach { symbol ->
-            Text(
-                text = symbol.text,
-                fontSize = symbol.size.sp,
-                color = symbol.color,
-                modifier = Modifier
-                    .offset(x = symbol.xOffset.dp, y = symbol.yOffset.dp)
-                    .graphicsLayer(rotationZ = symbol.rotation)
-            )
-        }
-
+        // LAYER 2: MAIN CONTENT
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(16.dp)
         ) {
+            // 1. HEADER
             Text(
-                text = "DYNAMUSIC",
+                text = "SingLong",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 style = androidx.compose.ui.text.TextStyle(
@@ -285,15 +233,35 @@ fun FirstPageScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = stringResource(R.string.language_prompt),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontStyle = FontStyle.Italic,
-                textAlign = TextAlign.Center
-            )
+            // This prompt stays trilingual so users can recognize it
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.language_prompt_en),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = stringResource(R.string.language_prompt_es),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = stringResource(R.string.language_prompt_fr),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             val languages = listOf("English", "Español", "Français")
 
@@ -312,7 +280,7 @@ fun FirstPageScreen(
                             .padding(4.dp),
                         contentPadding = androidx.compose.foundation.layout.PaddingValues(4.dp),
                         border = if (isSelected) {
-                            BorderStroke(3.dp, Color.Black)
+                            BorderStroke(2.dp, Color.Black)
                         } else {
                             ButtonDefaults.outlinedButtonBorder
                         },
@@ -334,19 +302,7 @@ fun FirstPageScreen(
             }
             Spacer(modifier = Modifier.height(36.dp))
 
-            if (selectedLanguage.isNotEmpty()) { // <-- Add this condition
-                Text(
-                    text = stringResource(R.string.intro_text),
-                    fontSize = 28.sp,
-                    fontFamily = FontFamily.Cursive,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.DarkGray,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 30.sp
-                )
-            }
-
-            PageIndicator(pageCount = 5, currentPageIndex = 0, themeColor = themeColor)
+            PageIndicator(pageCount = 4, currentPageIndex = 0, themeColor = themeColor)
             Spacer(modifier = Modifier.height(10.dp))
         }
     }
@@ -355,591 +311,133 @@ fun FirstPageScreen(
 @Composable
 fun SecondPageScreen(
     selectedThemeColor: Color,
-    onThemeSelected: (Color) -> Unit,
     selectedMode: String,
     onModeSelected: (String) -> Unit,
-    onNextClick: () -> Unit,
-    onSetManualLevels: () -> Unit,
-    onBreathControlClick: () -> Unit
+    onBreathControlClick: () -> Unit,
+    onAboutClick: () -> Unit
 ) {
-    var showManualSliders by remember { mutableStateOf(false) }
-    var hasUserSelectedMode by remember { mutableStateOf(false) }
-    val manualDbLevels = remember { mutableStateMapOf<String, Float>() }
-
-
-    LaunchedEffect(selectedMode) {
-        if (hasUserSelectedMode && selectedMode != "Manual") {
-            delay(500)
-            onNextClick()
-        }
-    }
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        if (showManualSliders) {
-            ManualLevelsEditor(
-                manualDbLevels = manualDbLevels,
-                themeColor = selectedThemeColor,
-                onSetClick = {
-                    onSetManualLevels()
-                    showManualSliders = false
-                }
-            )
-        } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(
-                    text = stringResource(R.string.welcome_title), // "DYNAMUSIC"
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = androidx.compose.ui.text.TextStyle(
-                        shadow = androidx.compose.ui.graphics.Shadow(
-                            color = selectedThemeColor,
-                            blurRadius = 8f
-                        )
-                    )
-                )
-                Text(
-                    text = stringResource(R.string.settings_title), // "Settings"
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontStyle = FontStyle.Italic,
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = stringResource(R.string.theme_colour), // "Theme Colour:"
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                val themes = listOf(
-                    Color.Red,
-                    Color.Blue,
-                    Color(0xFF6200EE),
-                    Color(0xFFFF5722),
-                    Color(0xFF006400) // Dark Green
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    themes.forEach { color ->
-                        Button(
-                            onClick = { onThemeSelected(color) },
-                            colors = ButtonDefaults.buttonColors(containerColor = color),
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(40.dp)
-                                .padding(4.dp),
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
-                            border = if (selectedThemeColor == color) BorderStroke(3.dp, Color.Black) else null
-                        ) {}
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = stringResource(R.string.calibrate_for), // "Calibrate for..."
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                val modesData = listOf(
-                    Triple("Voice", stringResource(R.string.mode_voice), stringResource(R.string.voice_desc)),
-                    Triple("Instruments", stringResource(R.string.mode_instruments), stringResource(R.string.instr_desc)),
-                    Triple("Percussion", stringResource(R.string.mode_percussion), stringResource(R.string.perc_desc)),
-                    Triple("Manual", stringResource(R.string.mode_manual), stringResource(R.string.manual_desc))
-                )
-
-                modesData.forEach { (internalModeId, displayModeName, description) ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Button(
-                            onClick = {
-                                onModeSelected(internalModeId)
-                                if (internalModeId == "Manual") {
-                                    manualDbLevels.clear()
-                                    showManualSliders = true
-                                } else {
-                                    hasUserSelectedMode = true
-                                }
-                            },
-                            modifier = Modifier
-                                .width(140.dp)
-                                .height(40.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = if (selectedMode == internalModeId) selectedThemeColor else Color.LightGray),
-                            border = if (selectedMode == internalModeId) BorderStroke(3.dp, Color.Black) else null,
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 8.dp)
-                        ) {
-                            Text(
-                                text = displayModeName,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (selectedMode == internalModeId) Color.White else Color.Black
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(
-                            text = description,
-                            fontSize = 14.sp,
-                            fontStyle = FontStyle.Italic,
-                            color = Color.Gray
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Breath Control",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Button(
-                        onClick = onBreathControlClick,
-                        modifier = Modifier
-                            .width(140.dp)
-                            .height(40.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = selectedThemeColor),
-                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 8.dp)
-                    ) {
-                        Text(
-                            text = "Breath Control",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-                PageIndicator(pageCount = 5, currentPageIndex = 1, themeColor = selectedThemeColor)
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-        }
-    }
-}
-
-@Composable
-fun ThirdPageScreen(
-    themeColor: Color,
-    selectedMode: String,
-    manualDbLevels: SnapshotStateMap<String, Float>,
-    onNextClick: () -> Unit
-) {
-    val context = LocalContext.current
-    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val screenHeight = configuration.screenHeightDp.dp
-
-    var hasPermission by remember {
-        mutableStateOf(
-            ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.RECORD_AUDIO
-            ) == PackageManager.PERMISSION_GRANTED
-        )
-    }
-
-    var decibels by remember { mutableDoubleStateOf(0.0) }
-    var isCalibrating by remember { mutableStateOf(false) }
-    var calibrationProgress by remember { mutableIntStateOf(5) }
-    var averageAmbientDb by remember { mutableIntStateOf(0) }
-    val calibrationReadings = remember { mutableListOf<Double>() }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            hasPermission = isGranted
-            if (!isGranted) {
-                Toast.makeText(context, "Microphone permission needed", Toast.LENGTH_SHORT).show()
-            }
-        }
-    )
-
-    val recorder = remember { AudioRecorder(context) }
-    val coroutineScope = rememberCoroutineScope()
-
-    DisposableEffect(hasPermission) {
-        if (hasPermission) { recorder.start() }
-        onDispose { recorder.stop() }
-    }
-
-    LaunchedEffect(hasPermission) {
-        if (hasPermission) {
-            withContext(Dispatchers.IO) {
-                while (isActive) {
-                    val amplitude = recorder.getMaxAmplitude()
-                    if (amplitude > 0) {
-                        val db = 20 * log10(amplitude.toDouble())
-                        withContext(Dispatchers.Main) {
-                            decibels = if (db > 0) db else 0.0
-                        }
-                    }
-                    delay(500)
-                }
-            }
-        }
-    }
-
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(16.dp)
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
+
+            // --- 1. HEADER ---
             Text(
-                text = "DYNAMUSIC",
+                text = "SingLong",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 style = androidx.compose.ui.text.TextStyle(
                     shadow = androidx.compose.ui.graphics.Shadow(
-                        color = themeColor,
+                        color = selectedThemeColor,
                         blurRadius = 8f
                     )
                 )
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Dynamics",
-                fontSize = 18.sp,
+                text = stringResource(R.string.settings_title), // Sub-header "Settings"
+                fontSize = 16.sp,
                 fontWeight = FontWeight.ExtraBold,
-                fontStyle = FontStyle.Italic,
+                fontStyle = FontStyle.Italic
             )
-            Spacer(modifier = Modifier.height(16.dp))
 
-            val modeDisplayName = when(selectedMode) {
-                "Voice" -> stringResource(R.string.mode_voice)
-                "Instruments" -> stringResource(R.string.mode_instruments)
-                "Percussion" -> stringResource(R.string.mode_percussion)
-                "Manual" -> stringResource(R.string.mode_manual)
-                else -> selectedMode
-            }
+            Spacer(modifier = Modifier.height(20.dp))
 
-            if (averageAmbientDb > 0) {
+
+            Text(
+                text = stringResource(R.string.intro_text),
+                fontSize = 24.sp,
+                fontFamily = FontFamily.Cursive,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.DarkGray,
+                textAlign = TextAlign.Center,
+                lineHeight = 30.sp
+            )
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // --- 4. BREATH CONTROL SECTION ---
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Button(
+                    onClick = {
+                        onModeSelected("Breath Control")
+                        onBreathControlClick()
+                    },
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(55.dp),
+
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedMode == "Breath Control") selectedThemeColor else Color.White,
+                        contentColor = if (selectedMode == "Breath Control") Color.White else Color.Black
+                    ),
+                    border = BorderStroke(if (selectedMode == "Breath Control") 2.dp else 1.dp, if (selectedMode == "Breath Control") Color.Black else Color.Gray),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.breath_control_title),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Spacer(modifier = Modifier.width(20.dp))
                 Text(
-                    text = stringResource(id = R.string.calibration_mode, modeDisplayName),
-                    fontSize = 15.sp,
+                    text = stringResource(R.string.breath_control_description),
+                    fontSize = 14.sp,
                     fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray
                 )
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            if (hasPermission) {
-                val finalThresholds = remember(averageAmbientDb, selectedMode, manualDbLevels) {
-                    val thresholds = IntArray(6)
-                    if (averageAmbientDb > 0) {
-                        if (selectedMode == "Manual") {
-                            val dynamicKeys = listOf("pp", "p", "mp", "mf", "f", "ff")
-                            var currentCumulativeThreshold = averageAmbientDb
-
-                            for (i in dynamicKeys.indices) {
-                                val key = dynamicKeys[i]
-                                val offset = manualDbLevels[key]?.toInt() ?: 0
-                                currentCumulativeThreshold += offset
-                                thresholds[i] = currentCumulativeThreshold
-                            }
-                        } else {
-                            val offsets = when (selectedMode) {
-                                "Voice" -> listOf(18, 28, 35, 40, 44, 47)
-                                "Instruments" -> listOf(18, 28, 36, 41, 44, 46)
-                                "Percussion" -> listOf(18, 30, 40, 48, 55, 62)
-                                else -> List(6) { 0 }
-                            }
-                            for (i in offsets.indices) {
-                                thresholds[i] = averageAmbientDb + offsets[i]
-                            }
-                        }
-                    }
-                    thresholds
-                }
-
-
-                repeat(7) { index ->
-                    val isCalibrationButton = (index == 6)
-                    val buttonHeight = if (isCalibrationButton) screenHeight * 0.18f else screenHeight * 0.06f
-
-                    val thresholdDb = if (index < 6) finalThresholds[5 - index] else 0
-
-                    val isActive = !isCalibrationButton && thresholdDb > 0 && decibels >= thresholdDb
-                    val baseColor = if (isCalibrationButton) Color.Transparent else if (isActive) themeColor else Color.Gray
-                    val animatedColor by animateColorAsState(targetValue = baseColor, label = "ButtonColor")
-
-                    Surface(
-                        modifier = Modifier
-                            .width(screenWidth * 0.8f)
-                            .height(buttonHeight),
-                        color = animatedColor,
-                        shape = RoundedCornerShape(16.dp),
-                        shadowElevation = 4.dp,
-                        border = BorderStroke(
-                            width = if (isCalibrationButton) 2.dp else 1.dp,
-                            color = Color.Black
-                        ),
-                        onClick = {
-                            if (isCalibrationButton && !isCalibrating) {
-                                isCalibrating = true
-                                calibrationProgress = 0
-                                calibrationReadings.clear()
-
-                                coroutineScope.launch {
-                                    repeat(5) {
-                                        delay(1000)
-                                        calibrationReadings.add(decibels)
-                                        calibrationProgress += 1
-                                    }
-                                    if (calibrationReadings.isNotEmpty()) {
-                                        averageAmbientDb = calibrationReadings.average().toInt()
-                                    }
-                                    isCalibrating = false
-                                }
-                            }
-                        },
-                        enabled = true
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            if (isCalibrationButton) {
-                                Row(modifier = Modifier.fillMaxSize()) {
-                                    repeat(5) { sectionIndex ->
-                                        val sectionColor = if (sectionIndex < calibrationProgress) themeColor else Color.LightGray
-                                        Box(modifier = Modifier
-                                            .weight(1f)
-                                            .fillMaxSize()
-                                            .background(sectionColor))
-                                        if (sectionIndex < 4 && isCalibrating) {
-                                            Spacer(modifier = Modifier
-                                                .width(1.dp)
-                                                .background(Color.Black.copy(alpha = 0.1f)))
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (index == 6) {
-                                val displayAverage = if (averageAmbientDb > 0) "$averageAmbientDb dB" else ""
-                                val infiniteTransition = rememberInfiniteTransition(label = "PulseTransition")
-                                val alpha by infiniteTransition.animateFloat(
-                                    initialValue = 1f,
-                                    targetValue = if (averageAmbientDb == 0 && !isCalibrating) 0.3f else 1f,
-                                    animationSpec = infiniteRepeatable(
-                                        animation = tween(2000, easing = LinearEasing),
-                                        repeatMode = RepeatMode.Reverse
-                                    ),
-                                    label = "PulseAlpha"
-                                )
-
-                                val calibrationText = when {
-                                    isCalibrating -> stringResource(R.string.calibrating_text)
-                                    averageAmbientDb == 0 -> {
-                                        stringResource(
-                                            R.string.ambient_start,
-                                            String.format(Locale.US, "%.0f", decibels)
-
-                                        )
-                                    }
-                                    else -> {
-                                        stringResource(
-                                            R.string.ambient_result,
-                                            String.format(Locale.US, "%.0f", decibels),
-                                            displayAverage
-                                        )
-                                    }
-                                }
-
-                                Text(
-                                    text = calibrationText,
-                                    fontSize = 15.sp,
-                                    fontStyle = FontStyle.Italic,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White.copy(alpha = if (averageAmbientDb == 0 && !isCalibrating) alpha else 1f),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            } else {
-                                val (abbrText, wordText) = when (index) {
-                                    0 -> "ff" to "fortissimo"; 1 -> "f" to "forte"; 2 -> "mf" to "mezzo-forte"
-                                    3 -> "mp" to "mezzo-piano"; 4 -> "p" to "piano"; 5 -> "pp" to "pianissimo"
-                                    else -> "" to ""
-                                }
-                                val dbText = if (thresholdDb > 0) "$thresholdDb dB" else ""
-
-                                Box(modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 16.dp)) {
-                                    Text(text = abbrText, fontSize = 15.sp, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.align(Alignment.CenterStart))
-                                    Text(text = wordText, fontSize = 15.sp, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.align(Alignment.Center))
-                                    Text(text = dbText, fontSize = 15.sp, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.align(Alignment.CenterEnd))
-                                }
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                PageIndicator(pageCount = 5, currentPageIndex = 2, themeColor = themeColor)
-            } else {
-                Button(onClick = { permissionLauncher.launch(Manifest.permission.RECORD_AUDIO) }) {
-                    Text(stringResource(R.string.grant_permission))
-                }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-        }
-
-        IconButton(
-            onClick = onNextClick,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-                .size(36.dp)
-        ) {
-            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings", tint = Color.DarkGray, modifier = Modifier.fillMaxSize())
-        }
-    }
-}
-
-@Composable
-fun ManualLevelsEditor(
-    manualDbLevels: SnapshotStateMap<String, Float>, themeColor: Color,
-    onSetClick: () -> Unit
-) {
-    val dynamicKeys = listOf("ff", "f", "mf", "mp", "p", "pp")
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        Text(
-            text = stringResource(R.string.manual_mode_text),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = stringResource(R.string.manual_desc),
-            fontSize = 14.sp,
-            fontStyle = FontStyle.Italic,
-            color = Color.Gray,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-
-        dynamicKeys.forEach { key ->
-            val sliderValue = manualDbLevels[key] ?: 10f
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = stringResource(R.string.notes_content),
+                fontSize = 14.sp,
+                fontStyle = FontStyle.Italic,
+                color = Color.DarkGray
+            )
+            Spacer(modifier = Modifier.height(20.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.Start
             ) {
-                Text(
-                    text = key,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic,
-                    fontSize = 16.sp,
-                    modifier = Modifier.width(60.dp)
-                )
-                Slider(
-                    value = sliderValue,
-                    onValueChange = { newValue ->
-                        manualDbLevels[key] = newValue
-                    },
-                    valueRange = 1f..20f,
-                    steps = 18,
-                    modifier = Modifier.weight(1f),
-                    colors = SliderDefaults.colors(
-                        thumbColor = themeColor,
-                        activeTrackColor = themeColor,
-                        inactiveTrackColor = themeColor.copy(alpha = 0.24f)
-                    )
-                )
-                Text(
-                    text = "${sliderValue.toInt()}",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
-                    modifier = Modifier.width(60.dp),
-                    textAlign = TextAlign.End
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                dynamicKeys.forEach { key ->
-                    if (!manualDbLevels.containsKey(key)) {
-                        manualDbLevels[key] = 10f
-                    }
+                OutlinedButton(
+                    onClick = onAboutClick,
+                    border = ButtonDefaults.outlinedButtonBorder,
+                    colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent, contentColor = Color.Black)
+                ) {
+                    Text(stringResource(R.string.about_singlong))
                 }
-                onSetClick()
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = themeColor)
-        ) {
-            Text(
-                text = stringResource(R.string.set_button),
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
+            }
+
+            PageIndicator(pageCount = 4, currentPageIndex = 1, themeColor = selectedThemeColor)
         }
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun FourthPageScreen(
     selectedThemeColor: Color,
-    onSettingsClick: () -> Unit,
-    ambientDbLevel: Float
+    onSettingsClick: () -> Unit
 ) {
     val context = LocalContext.current
 
+    // --- Audio & Timer State ---
     var hasPermission by remember {
         mutableStateOf(
             ActivityCompat.checkSelfPermission(
@@ -949,24 +447,35 @@ fun FourthPageScreen(
         )
     }
     var decibels by remember { mutableDoubleStateOf(0.0) }
-    val maxDecibels = 120.0
 
+    // --- Gauge Constants ---
+    val minVisibleDb = 10.0
+    val maxVisibleDb = 110.0
+    val visibleDbRange = maxVisibleDb - minVisibleDb
+    val gaugeHeight = 250.dp
+
+    // --- Timer and ambient level states ---
     var isCalibrating by remember { mutableStateOf(false) }
+    var calibrationProgress by remember { mutableIntStateOf(0) }
     var averageAmbientDb by remember { mutableIntStateOf(0) }
     var isTimerActive by remember { mutableStateOf(false) }
     var timerSeconds by remember { mutableIntStateOf(0) }
 
+    // --- NEW STATE: Track the peak decibel level during a breath ---
     var peakDecibel by remember { mutableDoubleStateOf(0.0) }
 
+    // --- NEW STATE: Lock timer after one use ---
     var isTimerDeactivated by remember { mutableStateOf(false) }
 
+    // --- NEW SLIDER STATE ---
+    var sensitivitySliderPosition by remember { mutableFloatStateOf(1f) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             hasPermission = isGranted
             if (!isGranted) {
-                Toast.makeText(context, "Microphone permission is required for this feature.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.microphone_permission_required), Toast.LENGTH_SHORT).show()
             }
         }
     )
@@ -974,6 +483,7 @@ fun FourthPageScreen(
     val recorder = remember { AudioRecorder(context) }
     val coroutineScope = rememberCoroutineScope()
 
+    // --- Lifecycle management ---
     DisposableEffect(hasPermission) {
         if (hasPermission) {
             recorder.start()
@@ -983,6 +493,7 @@ fun FourthPageScreen(
         }
     }
 
+    // --- Timer counting logic ---
     LaunchedEffect(isTimerActive) {
         if (isTimerActive) {
             while (isActive) {
@@ -992,7 +503,8 @@ fun FourthPageScreen(
         }
     }
 
-    LaunchedEffect(hasPermission) {
+    // --- Audio processing and timer activation loop ---
+    LaunchedEffect(hasPermission, sensitivitySliderPosition) {
         if (hasPermission) {
             withContext(Dispatchers.IO) {
                 while (isActive) {
@@ -1004,17 +516,21 @@ fun FourthPageScreen(
 
                             if (averageAmbientDb > 0) {
                                 val activationThreshold = averageAmbientDb + 15
-
                                 if (decibels >= activationThreshold && !isTimerActive && !isTimerDeactivated) {
                                     isTimerActive = true
                                     peakDecibel = decibels
                                 }
-
                                 if (isTimerActive) {
                                     if (decibels > peakDecibel) {
                                         peakDecibel = decibels
                                     }
-                                    val deactivationLevel = peakDecibel - 5
+                                    // --- Slider Controls Sensitivity ---
+                                    val sensitivityOffset = when (sensitivitySliderPosition.roundToInt()) {
+                                        0 -> 6.0 // Wide
+                                        1 -> 4.0  // Medium
+                                        else -> 2.0 // Narrow
+                                    }
+                                    val deactivationLevel = peakDecibel - sensitivityOffset
                                     if (decibels < deactivationLevel) {
                                         isTimerActive = false
                                         isTimerDeactivated = true
@@ -1029,17 +545,42 @@ fun FourthPageScreen(
         }
     }
 
+    // --- Pulsing animation for the calibration button ---
     val infiniteTransition = rememberInfiniteTransition(label = "PulseTransition")
     val alpha by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = if (averageAmbientDb == 0 && !isCalibrating) 0.3f else 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = LinearEasing),
+            animation = tween(1000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "PulseAlpha"
     )
 
+    // --- Pulsing animation for the Reset button ---
+    val resetPulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.3f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "ResetPulse"
+    )
+    val resetButtonAlpha = if (isTimerDeactivated) resetPulseAlpha else 1f
+
+    // --- Pulsing animation for the prompt message ---
+    val promptPulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.3f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "PromptPulse"
+    )
+
+    // --- UI ---
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -1051,8 +592,9 @@ fun FourthPageScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            // --- HEADER ---
             Text(
-                text = "DYNAMUSIC",
+                text = "SingLong",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 style = androidx.compose.ui.text.TextStyle(
@@ -1062,29 +604,53 @@ fun FourthPageScreen(
                     )
                 )
             )
+
+            // Sub-header Breath Control
             Text(
-                text = "Breath Control",
-                fontSize = 18.sp,
+                text = stringResource(R.string.breath_control_title),
+                fontSize = 16.sp,
                 fontWeight = FontWeight.ExtraBold,
                 fontStyle = FontStyle.Italic,
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Box to hold the message and reserve space to prevent layout jumps
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(85.dp) // Reserves space for text and padding
+                    .padding(vertical = 10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (averageAmbientDb > 0 && timerSeconds == 0 && !isTimerDeactivated && !isCalibrating) {
+                    Text(
+                        text = stringResource(R.string.sing_or_hum_prompt),
+                        fontSize = 22.sp,
+                        fontFamily = FontFamily.Cursive,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.Red.copy(alpha = promptPulseAlpha),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 20.sp
+                    )
+                }
+            }
 
             if (hasPermission) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
+                // This Box now controls the alignment of the counters and the gauge
+                Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    // --- Decibel Counter (Aligned to Start) ---
                     Column(
-                        modifier = Modifier.width(100.dp),
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .width(80.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
                         val activationThreshold = averageAmbientDb + 15
                         val shouldShowDecibels = decibels >= activationThreshold && averageAmbientDb > 0
                         val displayedDecibels = if (shouldShowDecibels) decibels else 0.0
-                        val decibelText = String.format(Locale.US, "%.0f", displayedDecibels.coerceAtLeast(0.0))
+                        val decibelText = String.format("%.0f", displayedDecibels.coerceAtLeast(0.0))
 
                         Text(
                             text = decibelText,
@@ -1093,48 +659,98 @@ fun FourthPageScreen(
                             color = if (shouldShowDecibels) selectedThemeColor else Color.Gray.copy(alpha = 0.5f)
                         )
                         Text(
-                            text = "decibels",
+                            text = stringResource(R.string.decibels),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color.Gray
                         )
+                        // --- SPACER FOR ALIGNMENT ---
+                        Spacer(modifier = Modifier.height(78.dp))
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(300.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(Color.LightGray.copy(alpha = 0.5f))
-                            .border(2.dp, Color.DarkGray, RoundedCornerShape(10.dp))
+                    // --- GAUGE WITH LABELS (Aligned to Center) ---
+                    Row(
+                        modifier = Modifier.align(Alignment.Center),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val mercuryFill = (decibels / maxDecibels).coerceIn(0.0, 1.0).toFloat()
+                        val labelWidth = 40.dp
+                        // --- Labels on the left ---
                         Box(
                             modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .fillMaxWidth()
-                                .fillMaxHeight(mercuryFill)
-                                .background(selectedThemeColor)
-                        )
-                        if (averageAmbientDb > 0) {
-                            val linePositionDp = (300 * (averageAmbientDb.toFloat() / maxDecibels)).dp
+                                .height(gaugeHeight)
+                                .width(labelWidth)
+                                .padding(end = 4.dp), // Create space between labels and gauge
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            val markerLevels = listOf(20, 40, 60, 80, 100)
+                            markerLevels.forEach { level ->
+                                val positionFraction = ((level - minVisibleDb) / visibleDbRange).coerceIn(0.0, 1.0)
+                                Text(
+                                    text = "${level}dB",
+                                    fontSize = 10.sp,
+                                    color = Color.Black,
+                                    modifier = Modifier
+                                        .offset(
+                                            y = -(gaugeHeight * positionFraction.toFloat()) + 5.dp
+                                        )
+                                )
+                            }
+                        }
+
+                        // --- GAUGE ---
+                        Box(
+                            modifier = Modifier
+                                .width(50.dp)
+                                .height(gaugeHeight)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color.LightGray.copy(alpha = 0.5f))
+                                .border(2.dp, Color.DarkGray, RoundedCornerShape(10.dp))
+                        ) {
+                            val fillFraction = ((decibels - minVisibleDb) / visibleDbRange).coerceIn(0.0, 1.0).toFloat()
                             Box(
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
                                     .fillMaxWidth()
-                                    .height(2.dp)
-                                    .offset(y = -linePositionDp)
-                                    .background(Color.Black)
+                                    .fillMaxHeight(fillFraction)
+                                    .background(selectedThemeColor)
                             )
+
+                            // --- Decibel Markers ---
+                            val markerLevels = listOf(20, 40, 60, 80, 100)
+                            markerLevels.forEach { level ->
+                                val positionFraction = ((level - minVisibleDb) / visibleDbRange).coerceIn(0.0, 1.0)
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.BottomStart)
+                                        .width(10.dp) // Corrected width
+                                        .height(1.dp)
+                                        .offset(y = -(gaugeHeight * positionFraction.toFloat()))
+                                        .background(Color.Black)
+                                )
+                            }
+
+                            // --- Average Ambient Level Line ---
+                            if (averageAmbientDb > minVisibleDb) {
+                                val avgPositionFraction = ((averageAmbientDb - minVisibleDb) / visibleDbRange).coerceIn(0.0, 1.0)
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .fillMaxWidth()
+                                        .height(2.dp)
+                                        .offset(y = -(gaugeHeight * avgPositionFraction.toFloat()))
+                                        .background(Color.Black)
+                                )
+                            }
                         }
+                        // --- SPACER FOR CENTERING ---
+                        Spacer(modifier = Modifier.width(labelWidth + 4.dp))
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
+                    // --- Timer Counter & Reset Button (Aligned to End) ---
                     Column(
-                        modifier = Modifier.width(100.dp),
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .width(100.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -1145,43 +761,95 @@ fun FourthPageScreen(
                             color = if (isTimerActive) selectedThemeColor else Color.Gray.copy(alpha = 0.5f)
                         )
                         Text(
-                            text = "seconds",
+                            text = stringResource(R.string.seconds),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color.Gray
                         )
+                        Spacer(modifier = Modifier.height(30.dp))
+
+                        // --- MOVED RESET BUTTON ---
+                        Button(
+                            onClick = {
+                                timerSeconds = 0
+                                isTimerDeactivated = false // Unlock the timer
+                            },
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.size(width = 100.dp, height = 50.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Red.copy(alpha = resetButtonAlpha)
+                            ),
+                            border = BorderStroke(2.dp, Color.Black)
+                        ) {
+                            Text(
+                                stringResource(R.string.reset_timer_button),
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center,
+                                lineHeight = 16.sp
+                            )
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
-                Button(
-                    onClick = {
-                        timerSeconds = 0
-                        isTimerDeactivated = false
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                    border = BorderStroke(1.dp, Color.Black)
+                // --- NEW SENSITIVITY SLIDER ---
+                Column(
+                    modifier = Modifier.fillMaxWidth(0.88f),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Reset Timer", color = Color.White)
+                    Text(
+                        text = stringResource(R.string.variability_of_your_note),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic
+                    )
+                    Slider(
+                        value = sensitivitySliderPosition,
+                        onValueChange = { sensitivitySliderPosition = it },
+                        colors = SliderDefaults.colors(
+                            thumbColor = selectedThemeColor,
+                            activeTrackColor = selectedThemeColor,
+                            inactiveTrackColor = selectedThemeColor.copy(alpha = 0.3f)
+                        ),
+                        steps = 1,
+                        valueRange = 0f..2f
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(stringResource(R.string.slider_wide), fontStyle = FontStyle.Italic, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.slider_medium), fontStyle = FontStyle.Italic, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.slider_narrow), fontStyle = FontStyle.Italic, fontWeight = FontWeight.SemiBold)
+                    }
                 }
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
-
+                // --- MODIFIED CALIBRATION BUTTON ---
                 val calibrationButtonText = when {
-                    isCalibrating -> " CALIBRATING...\nPlease stay silent."
-                    averageAmbientDb == 0 -> " Touch to calibrate an\naverage ambient level"
-                    else -> "Average ambient Level: $averageAmbientDb dB\n  TOUCH TO RE-CALIBRATE"
+                    isCalibrating -> stringResource(R.string.calibrating_text)
+                    averageAmbientDb == 0 -> stringResource(R.string.breath_control_calibrate_start)
+                    else -> stringResource(R.string.breath_control_calibrate_result, averageAmbientDb)
                 }
-                val buttonColor = if (averageAmbientDb == 0 && !isCalibrating) {
-                    selectedThemeColor.copy(alpha = alpha)
-                } else {
-                    selectedThemeColor
-                }
-                Button(
+                val animatedColor by animateColorAsState(
+                    targetValue = if (averageAmbientDb == 0 && !isCalibrating) selectedThemeColor.copy(alpha = alpha) else selectedThemeColor,
+                    label = "ButtonColor"
+                )
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth(0.88f)
+                        .height(60.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = if(isCalibrating) Color.Transparent else animatedColor,
+                    border = BorderStroke(2.dp, Color.Black),
                     onClick = {
                         if (!isCalibrating) {
                             isCalibrating = true
+                            calibrationProgress = 0 // Reset progress
                             timerSeconds = 0
                             isTimerActive = false
                             peakDecibel = 0.0
@@ -1191,6 +859,7 @@ fun FourthPageScreen(
                                 repeat(5) {
                                     delay(1000)
                                     readings.add(decibels)
+                                    calibrationProgress++ // Increment progress
                                 }
                                 if (readings.isNotEmpty()) {
                                     averageAmbientDb = readings.average().toInt()
@@ -1198,65 +867,230 @@ fun FourthPageScreen(
                                 isCalibrating = false
                             }
                         }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-                    border = BorderStroke(1.dp, Color.Black)
+                    }
                 ) {
-                    Text(
-                        text = calibrationButtonText,
-                        fontSize = 15.sp,
-                        fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        if (isCalibrating) {
+                            Row(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp))) {
+                                repeat(5) { sectionIndex ->
+                                    val sectionColor = if (sectionIndex < calibrationProgress) selectedThemeColor else Color.LightGray
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxHeight()
+                                            .background(sectionColor)
+                                    )
+                                    if (sectionIndex < 4) { // Dividers
+                                        Spacer(
+                                            modifier = Modifier
+                                                .width(1.dp)
+                                                .fillMaxHeight()
+                                                .background(Color.Black.copy(alpha = 0.2f))
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Text(
+                            text = calibrationButtonText,
+                            fontSize = 15.sp,
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             } else {
                 Button(onClick = { permissionLauncher.launch(Manifest.permission.RECORD_AUDIO) }) {
-                    Text("Grant Microphone Permission")
+                    Text(stringResource(R.string.grant_permission))
                 }
             }
-
             Spacer(modifier = Modifier.weight(1f))
-            PageIndicator(pageCount = 5, currentPageIndex = 3, themeColor = selectedThemeColor)
+            PageIndicator(pageCount = 4, currentPageIndex = 2, themeColor = selectedThemeColor)
         }
 
-        IconButton(
+        // --- Settings Button ---
+        SettingsButton(
             onClick = onSettingsClick,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
-        ) {
-            Icon(Icons.Filled.Settings, contentDescription = "Settings", modifier = Modifier.size(36.dp))
-        }
+        )
     }
 }
+
+@Composable
+fun SettingsButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Settings,
+            contentDescription = stringResource(R.string.settings_button_description),
+            modifier = Modifier.size(36.dp),
+            tint = Color.Black
+        )
+    }
+}
+
+@Composable
+fun AboutScreen(
+    selectedThemeColor: Color,
+    onSettingsClick: () -> Unit
+) {
+    val context = LocalContext.current
+    val githubUrl = "https://github.com/JohnRogy"
+    val liberapayUrl = "https://liberapay.com/JohnRogy/donate"
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.about_title),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                style = androidx.compose.ui.text.TextStyle(
+                    shadow = androidx.compose.ui.graphics.Shadow(
+                        color = selectedThemeColor,
+                        blurRadius = 8f
+                    )
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(id = R.string.about_subtitle),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.ExtraBold,
+                fontStyle = FontStyle.Italic
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = stringResource(id = R.string.about_placeholder),
+                fontSize = 14.sp,
+                fontStyle = FontStyle.Italic,
+                color = Color.DarkGray
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, liberapayUrl.toUri())
+                            try {
+                                context.startActivity(intent)
+                            } catch (_: ActivityNotFoundException) {
+                                // Handle the case where the user doesn't have a web browser installed
+                                Toast.makeText(context, "No web browser found.", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier.size(width = 120.dp, height = 34.dp),
+                        border = ButtonDefaults.outlinedButtonBorder,
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent, contentColor = Color.Black)
+                    ) {
+                        Text(stringResource(id = R.string.support_button))
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = stringResource(id = R.string.support_placeholder),
+                        fontSize = 14.sp,
+                        fontStyle = FontStyle.Italic,
+                        color = Color.DarkGray
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, githubUrl.toUri())
+                            try {
+                                context.startActivity(intent)
+                            } catch (_: ActivityNotFoundException) {
+                                // Handle the case where the user doesn't have a web browser installed
+                                Toast.makeText(context, "No web browser found.", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier.size(width = 120.dp, height = 34.dp),
+                        border = ButtonDefaults.outlinedButtonBorder,
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent, contentColor = Color.Black)
+                    ) {
+                        Text(stringResource(id = R.string.view_button))
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = stringResource(id = R.string.view_placeholder),
+                        fontSize = 14.sp,
+                        fontStyle = FontStyle.Italic,
+                        color = Color.DarkGray
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            PageIndicator(pageCount = 4, currentPageIndex = 3, themeColor = selectedThemeColor)
+        }
+        SettingsButton(
+            onClick = onSettingsClick,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+        )
+    }
+}
+
+
+// --- HELPER CLASSES ---
 
 class AudioRecorder(private val context: Context) {
     private var recorder: MediaRecorder? = null
     private var audioFile: File? = null
 
-    fun start() {
-        if (recorder == null) {
-            audioFile = File(context.cacheDir, "audio.mp3")
+    fun start() {if (recorder == null) {
+        audioFile = File(context.cacheDir, "audio.mp3")
 
-            recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                MediaRecorder(context)
-            } else {
-                @Suppress("DEPRECATION")
-                MediaRecorder()
-            }.apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                setOutputFile(audioFile?.absolutePath)
-                try {
-                    prepare()
-                    start()
-                } catch (e: Exception) {
-                    // Ignored
-                }
+        recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            MediaRecorder(context)
+        } else {
+            @Suppress("DEPRECATION")
+            MediaRecorder()
+        }.apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            // --- CORRECTED LINE ---
+            // The AudioEncoder constants are inside MediaRecorder.
+            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            setOutputFile(audioFile?.absolutePath)
+            try {
+                prepare()
+                start()
+            } catch (e: Exception) {
+                // It's good practice to log the exception to see what's wrong
+                Log.e("AudioRecorder", "Prepare failed", e)
+                e.printStackTrace()
             }
         }
+    }
     }
 
     fun stop() {
@@ -1265,7 +1099,9 @@ class AudioRecorder(private val context: Context) {
                 stop()
                 release()
             } catch (e: Exception) {
-                // Ignored
+                // It's good practice to log exceptions here too
+                Log.e("AudioRecorder", "Stop/release failed", e)
+                e.printStackTrace()
             }
         }
         recorder = null
@@ -1275,47 +1111,40 @@ class AudioRecorder(private val context: Context) {
     fun getMaxAmplitude(): Int {
         return try {
             recorder?.maxAmplitude ?: 0
-        } catch (e: Exception) {
+        } catch (_:Exception) {
+            // This can happen if called after the recorder is released
             0
         }
     }
 }
 
-data class SymbolData(
-    val text: String,
-    val xOffset: Int,
-    val yOffset: Int,
-    val rotation: Float,
-    val size: Int,
-    val color: Color
-)
-
 @Composable
 fun PageIndicator(
     pageCount: Int,
-    currentPageIndex: Int,
+    currentPageIndex: Int, // 0 for Page 1, 1 for Page 2, etc.
     themeColor: Color
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 16.dp)
+        modifier = Modifier.padding(vertical = 16.dp) // Add some breathing room
     ) {
         repeat(pageCount) { index ->
             val isSelected = index == currentPageIndex
 
+            // Draw the circle for the page indicators.
             Box(
                 modifier = Modifier
-                    .padding(4.dp)
-                    .size(12.dp)
+                    .padding(4.dp) // Space between circles
+                    .size(12.dp)   // Size of the circle
                     .background(
                         color = if (isSelected) themeColor else Color.Transparent,
-                        shape = CircleShape
+                        shape = androidx.compose.foundation.shape.CircleShape
                     )
                     .border(
                         width = 1.dp,
                         color = if (isSelected) themeColor else Color.Gray,
-                        shape = CircleShape
+                        shape = androidx.compose.foundation.shape.CircleShape
                     )
             )
         }

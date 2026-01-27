@@ -1,0 +1,17 @@
+Index: app/src/main/java/com/example/dynamusic/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/dynamusic/MainActivity.kt b/app/src/main/java/com/example/dynamusic/MainActivity.kt
+--- a/app/src/main/java/com/example/dynamusic/MainActivity.kt
++++ b/app/src/main/java/com/example/dynamusic/MainActivity.kt	(date 1769356073500)
+@@ -813,7 +813,7 @@
+                                         stringResource(
+                                             R.string.ambient_start,
+                                             String.format("%.0f", decibels)
+-                                            
++
+                                         )
+                                     }
+                                     else -> {

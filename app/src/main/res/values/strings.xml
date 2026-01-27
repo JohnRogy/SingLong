@@ -1,64 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Dynamusic</string>
+    <string name="app_name">SingLong</string>
 
     <!-- General -->
-    <string name="welcome_title">DYNAMUSIC</string>
+    <string name="welcome_title">SingLong</string>
     <string name="grant_permission">Grant Microphone Permission</string>
     <string name="permission_denied">Permission Denied</string>
     <string name="settings">Settings</string>
-    <string name="back">Back</string>
+    <string name="settings_button_description">Settings</string>
 
     <!-- Page 1: Welcome -->
-    <string name="language_prompt">Choose a language…</string>
-    <string name="intro_text">Welcome to Dynamusic, a tool for singers and instrumentalists, to help with learning dynamics and breath control.</string>
+    <string name="language_prompt_en">Choose a language…</string>
+    <string name="language_prompt_es">Elige un idioma…</string>
+    <string name="language_prompt_fr">Choisissez une langue…</string>
+    <string name="intro_text">🎶Welcome to SingLong, a free and open-source tool for singers to help with learning about breath control.🎶</string>
 
     <!-- Page 2: Settings -->
     <string name="settings_title">Settings</string>
-    <string name="theme_colour">Theme Colour:</string>
-    <string name="calibrate_for">Calibrate for…</string>
-    <string name="mode_voice">Voice</string>
-    <string name="mode_instruments">Instruments</string>
-    <string name="mode_percussion">Percussion</string>
-    <string name="mode_manual">Manual</string>
-    <string name="voice_desc">Best for singers</string>
-    <string name="instr_desc">For wind, strings etc.</string>
-    <string name="perc_desc">Drums &amp; impact</string>
-    <string name="manual_desc">Set your own decibel levels.\nThese will be added to the average ambient level.</string>
-    <string name="manual_mode_text">MANUAL MODE</string>
-    <string name="set_button">Set</string>
-    <string name="color_red">Red</string>
-    <string name="color_blue">Blue</string>
-    <string name="color_purple">Purple</string>
-    <string name="color_orange">Orange</string>
+    <string name="breath_control_description">Practice sustaining a note.</string>
+    <string name="information_button">Information</string>
+    <string name="about_singlong">About SingLong</string>
 
-    <!-- Page 3: Dynamics -->
-    <string name="dynamics_title">Dynamics</string>
-    <string name="calibrating_text">CALIBRATING…Please stay silent.</string>
-    <string name="ambient_start">Current ambient noise level: %1$s dB\n\n\nTOUCH TO CALIBRATE</string>
-    <string name="ambient_result">Ambient noise level: %1$s dB\n\nAverage ambient level: %2$s\n\n TOUCH TO RE-CALIBRATE</string>
-    <string name="calibration_mode">Calibration: %1$s mode.</string>
-    <string name="ambient_noise_calibration">Ambient Noise Calibration</string>
-    <string name="calibration_instructions">Let\'s calibrate the ambient noise level. Find a quiet spot and press the button below.</string>
-    <string name="start_calibration">Start Calibration</string>
-    <string name="calibrating_message">Calibrating… please wait.</string>
-    <string name="calibrated_to">Calibrated to</string>
-    <string name="set_ambient_level">Set Ambient Level</string>
-
+    <string name="notes_content">Notes:\n- SingLong will show you how many seconds you can hold a note.\n
+- The "Decibel Range" slider lets you choose a wide or narrow range of decibels for holding a note.
+    </string>
 
     <!-- Page 4: Breath Control -->
     <string name="breath_control_title">Breath Control</string>
+    <string name="calibrating_text">CALIBRATING…Please stay silent.</string>
     <string name="decibels">decibels</string>
     <string name="seconds">seconds</string>
     <string name="reset_timer">Reset Timer</string>
-    <string name="breath_control_calibrate_start">Touch to calibrate an\naverage ambient level</string>
-    <string name="breath_control_calibrate_result">Average ambient Level: %1$d dB\n   TOUCH TO RE-CALIBRATE</string>
+    <string name="breath_control_calibrate_start">Touch to calibrate an average ambient level</string>
+    <string name="breath_control_calibrate_result">Average ambient Level: %1$d dB\nTOUCH TO RE-CALIBRATE</string>
     <string name="microphone_permission_required">Microphone permission is required for this feature.</string>
-    <string name="grant_permission_prompt">We need microphone access to measure decibel levels.</string>
-    <string name="grant_permission_button">Grant Permission</string>
-    <string name="timer_display">%1$d seconds</string>
-    <string name="peak_db_display">Peak: %1$d dB</string>
-    <string name="start_timer_button">Start Timer</string>
-    <string name="timer_used_button">Timer Used</string>
+    <string name="slider_medium">4dB</string>
+    <string name="slider_wide"> 6dB</string>
+    <string name="slider_narrow">2dB</string>
+    <string name="sing_or_hum_prompt">🎶Sing or hum a note…\n Try to keep the same decibel level.🎶</string>
+    <string name="reset_timer_button">Reset\nTimer</string>
+    <string name="variability_of_your_note">Decibel Range Of Your Note</string>
+
+    <!-- About Page -->
+    <string name="about_title">SingLong</string>
+    <string name="about_subtitle">About</string>
+    <string name="about_placeholder"> - App version: 1.0\n\n
+- Licensed under the MIT License\n
+- This app is free, ad-free, and open-source software, created to help beginner singers and musicians learn and practice breath control.
+
+If you find it useful and would like to support ongoing development, you can make a voluntary contribution. Contributions are optional, appreciated, and help keep the app free for everyone.\n
+
+- Developed and maintained by JohnRogy.\n
+    </string>
+    <string name="support_button">Support</string>
+    <string name="view_button">View</string>
+    <string name="support_placeholder">Support the project on Liberapay.</string>
+    <string name="view_placeholder">View the source code on GitHub.</string>
+
 
 </resources>

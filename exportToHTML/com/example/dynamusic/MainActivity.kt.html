@@ -1,0 +1,979 @@
+<html>
+<head>
+<title>MainActivity.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #2aacb8;}
+.s4 { color: #6aab73;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MainActivity.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com</span><span class="s2">.</span><span class="s1">example</span><span class="s2">.</span><span class="s1">dynamusic</span>
+
+<span class="s1">import android</span><span class="s2">.</span><span class="s1">Manifest</span>
+<span class="s1">import android</span><span class="s2">.</span><span class="s1">content</span><span class="s2">.</span><span class="s1">pm</span><span class="s2">.</span><span class="s1">PackageManager</span>
+<span class="s1">import android</span><span class="s2">.</span><span class="s1">media</span><span class="s2">.</span><span class="s1">MediaRecorder</span>
+<span class="s1">import android</span><span class="s2">.</span><span class="s1">os</span><span class="s2">.</span><span class="s1">Bundle</span>
+<span class="s1">import android</span><span class="s2">.</span><span class="s1">widget</span><span class="s2">.</span><span class="s1">Toast</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">activity</span><span class="s2">.</span><span class="s1">ComponentActivity</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">activity</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">rememberLauncherForActivityResult</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">activity</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">setContent</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">activity</span><span class="s2">.</span><span class="s1">enableEdgeToEdge</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">activity</span><span class="s2">.</span><span class="s1">result</span><span class="s2">.</span><span class="s1">contract</span><span class="s2">.</span><span class="s1">ActivityResultContracts</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">animation</span><span class="s2">.</span><span class="s1">animateColorAsState</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">animation</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">LinearEasing</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">animation</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">RepeatMode</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">animation</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">animateFloat</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">animation</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">infiniteRepeatable</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">animation</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">rememberInfiniteTransition</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">animation</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">tween</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">ExperimentalFoundationApi</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">background</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">border</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Arrangement</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Box</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Column</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Row</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Spacer</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">fillMaxSize</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">fillMaxWidth</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">height</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">offset</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">padding</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">size</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">width</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">pager</span><span class="s2">.</span><span class="s1">HorizontalPager</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">pager</span><span class="s2">.</span><span class="s1">rememberPagerState</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">rememberScrollState</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">verticalScroll</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material</span><span class="s2">.</span><span class="s1">icons</span><span class="s2">.</span><span class="s1">Icons</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material</span><span class="s2">.</span><span class="s1">icons</span><span class="s2">.</span><span class="s1">automirrored</span><span class="s2">.</span><span class="s1">filled</span><span class="s2">.</span><span class="s1">ArrowBack</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material</span><span class="s2">.</span><span class="s1">icons</span><span class="s2">.</span><span class="s1">automirrored</span><span class="s2">.</span><span class="s1">filled</span><span class="s2">.</span><span class="s1">ArrowForward</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">Button</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">ButtonDefaults</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">Icon</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">IconButton</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">OutlinedButton</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">Scaffold</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">Slider</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">Surface</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">Text</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">Composable</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">DisposableEffect</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">LaunchedEffect</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">getValue</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">mutableDoubleStateOf</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">mutableFloatStateOf</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">mutableIntStateOf</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">mutableStateOf</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">remember</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">rememberCoroutineScope</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">setValue</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">Alignment</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">Modifier</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">graphics</span><span class="s2">.</span><span class="s1">Color</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">graphics</span><span class="s2">.</span><span class="s1">graphicsLayer</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">platform</span><span class="s2">.</span><span class="s1">LocalContext</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">font</span><span class="s2">.</span><span class="s1">FontFamily</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">font</span><span class="s2">.</span><span class="s1">FontStyle</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">font</span><span class="s2">.</span><span class="s1">FontWeight</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">unit</span><span class="s2">.</span><span class="s1">IntOffset</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">unit</span><span class="s2">.</span><span class="s1">dp</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">unit</span><span class="s2">.</span><span class="s1">sp</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">app</span><span class="s2">.</span><span class="s1">ActivityCompat</span>
+<span class="s1">import kotlinx</span><span class="s2">.</span><span class="s1">coroutines</span><span class="s2">.</span><span class="s1">Dispatchers</span>
+<span class="s1">import kotlinx</span><span class="s2">.</span><span class="s1">coroutines</span><span class="s2">.</span><span class="s1">delay</span>
+<span class="s1">import kotlinx</span><span class="s2">.</span><span class="s1">coroutines</span><span class="s2">.</span><span class="s1">isActive</span>
+<span class="s1">import kotlinx</span><span class="s2">.</span><span class="s1">coroutines</span><span class="s2">.</span><span class="s1">launch</span>
+<span class="s1">import kotlinx</span><span class="s2">.</span><span class="s1">coroutines</span><span class="s2">.</span><span class="s1">withContext</span>
+<span class="s1">import kotlin</span><span class="s2">.</span><span class="s1">math</span><span class="s2">.</span><span class="s1">log10</span>
+<span class="s1">import kotlin</span><span class="s2">.</span><span class="s1">random</span><span class="s2">.</span><span class="s1">Random</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material</span><span class="s2">.</span><span class="s1">icons</span><span class="s2">.</span><span class="s1">filled</span><span class="s2">.</span><span class="s1">Settings</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">Card</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">CardDefaults</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">SliderDefaults</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">mutableStateMapOf</span>
+<span class="s1">import androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">snapshots</span><span class="s2">.</span><span class="s1">toInt</span>
+
+<span class="s0">class </span><span class="s1">MainActivity : ComponentActivity</span><span class="s2">() {</span>
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onCreate</span><span class="s2">(</span><span class="s1">savedInstanceState: Bundle?</span><span class="s2">) {</span>
+        <span class="s0">super</span><span class="s2">.</span><span class="s1">onCreate</span><span class="s2">(</span><span class="s1">savedInstanceState</span><span class="s2">)</span>
+        <span class="s1">enableEdgeToEdge</span><span class="s2">()</span>
+        <span class="s1">setContent </span><span class="s2">{</span>
+            <span class="s1">Scaffold</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">()) { </span><span class="s1">innerPadding </span><span class="s2">-&gt;</span>
+                <span class="s1">PagerScreen</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s1">innerPadding</span><span class="s2">))</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s1">@OptIn</span><span class="s2">(</span><span class="s1">ExperimentalFoundationApi::</span><span class="s0">class</span><span class="s2">)</span>
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">PagerScreen</span><span class="s2">(</span><span class="s1">modifier: Modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">) {</span>
+    <span class="s0">val </span><span class="s1">pagerState </span><span class="s2">= </span><span class="s1">rememberPagerState</span><span class="s2">(</span><span class="s1">pageCount </span><span class="s2">= { </span><span class="s3">4 </span><span class="s2">})</span>
+    <span class="s0">val </span><span class="s1">coroutineScope </span><span class="s2">= </span><span class="s1">rememberCoroutineScope</span><span class="s2">()</span>
+
+    <span class="s0">var </span><span class="s1">currentThemeColor by remember </span><span class="s2">{ </span><span class="s1">mutableStateOf</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Red</span><span class="s2">) }</span>
+    <span class="s0">var </span><span class="s1">selectedMode by remember </span><span class="s2">{ </span><span class="s1">mutableStateOf</span><span class="s2">(</span><span class="s4">&quot;Voice&quot;</span><span class="s2">) }</span>
+
+    <span class="s0">val </span><span class="s1">manualDbLevels </span><span class="s2">= </span><span class="s1">remember </span><span class="s2">{</span>
+        <span class="s1">mutableStateMapOf</span><span class="s2">(</span>
+            <span class="s4">&quot;ppp&quot; </span><span class="s1">to </span><span class="s3">40f</span><span class="s2">,</span>
+            <span class="s4">&quot;pp&quot; </span><span class="s1">to </span><span class="s3">50f</span><span class="s2">,</span>
+            <span class="s4">&quot;p&quot; </span><span class="s1">to </span><span class="s3">60f</span><span class="s2">,</span>
+            <span class="s4">&quot;mp&quot; </span><span class="s1">to </span><span class="s3">65f</span><span class="s2">,</span>
+            <span class="s4">&quot;mf&quot; </span><span class="s1">to </span><span class="s3">70f</span><span class="s2">,</span>
+            <span class="s4">&quot;f&quot; </span><span class="s1">to </span><span class="s3">75f</span><span class="s2">,</span>
+            <span class="s4">&quot;ff&quot; </span><span class="s1">to </span><span class="s3">85f</span><span class="s2">,</span>
+            <span class="s4">&quot;fff&quot; </span><span class="s1">to </span><span class="s3">95f</span>
+        <span class="s2">)</span>
+    <span class="s2">}</span>
+
+    <span class="s1">HorizontalPager</span><span class="s2">(</span>
+        <span class="s1">state </span><span class="s2">= </span><span class="s1">pagerState</span><span class="s2">,</span>
+        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">modifier</span>
+    <span class="s2">) { </span><span class="s1">page: Int </span><span class="s2">-&gt;</span>
+        <span class="s0">when </span><span class="s2">(</span><span class="s1">page</span><span class="s2">) {</span>
+            <span class="s3">0 </span><span class="s2">-&gt; </span><span class="s1">FirstPageScreen</span><span class="s2">(</span>
+                <span class="s1">themeColor </span><span class="s2">= </span><span class="s1">currentThemeColor</span><span class="s2">,</span>
+                <span class="s1">onArrowClick </span><span class="s2">= { </span><span class="s1">coroutineScope</span><span class="s2">.</span><span class="s1">launch </span><span class="s2">{ </span><span class="s1">pagerState</span><span class="s2">.</span><span class="s1">animateScrollToPage</span><span class="s2">(</span><span class="s3">1</span><span class="s2">) } }</span>
+            <span class="s2">)</span>
+            <span class="s3">1 </span><span class="s2">-&gt; </span><span class="s1">SecondPageScreen</span><span class="s2">(</span>
+                <span class="s1">themeColor </span><span class="s2">= </span><span class="s1">currentThemeColor</span><span class="s2">,</span>
+                <span class="s1">selectedMode </span><span class="s2">= </span><span class="s1">selectedMode</span><span class="s2">,</span>
+                <span class="s5">// --- ADD THIS LINE ---</span>
+                <span class="s1">manualDbLevels </span><span class="s2">= </span><span class="s1">manualDbLevels</span><span class="s2">,</span>
+                <span class="s5">// ---------------------</span>
+                <span class="s1">onNextClick </span><span class="s2">= { </span><span class="s1">coroutineScope</span><span class="s2">.</span><span class="s1">launch </span><span class="s2">{ </span><span class="s1">pagerState</span><span class="s2">.</span><span class="s1">animateScrollToPage</span><span class="s2">(</span><span class="s3">2</span><span class="s2">) } },</span>
+                <span class="s1">onBackClick </span><span class="s2">= { </span><span class="s1">coroutineScope</span><span class="s2">.</span><span class="s1">launch </span><span class="s2">{ </span><span class="s1">pagerState</span><span class="s2">.</span><span class="s1">animateScrollToPage</span><span class="s2">(</span><span class="s3">0</span><span class="s2">) } }</span>
+            <span class="s2">)</span>
+            <span class="s3">2 </span><span class="s2">-&gt; </span><span class="s1">ThirdPageScreen</span><span class="s2">(</span>
+                <span class="s1">selectedThemeColor </span><span class="s2">= </span><span class="s1">currentThemeColor</span><span class="s2">,</span>
+                <span class="s1">onThemeSelected </span><span class="s2">= { </span><span class="s1">newColor </span><span class="s2">-&gt; </span><span class="s1">currentThemeColor </span><span class="s2">= </span><span class="s1">newColor </span><span class="s2">},</span>
+                <span class="s1">selectedMode </span><span class="s2">= </span><span class="s1">selectedMode</span><span class="s2">,</span>
+                <span class="s1">onModeSelected </span><span class="s2">= { </span><span class="s1">newMode </span><span class="s2">-&gt; </span><span class="s1">selectedMode </span><span class="s2">= </span><span class="s1">newMode </span><span class="s2">},</span>
+                <span class="s1">manualDbLevels </span><span class="s2">= </span><span class="s1">manualDbLevels</span><span class="s2">,</span>
+                <span class="s1">onNextClick </span><span class="s2">= { </span><span class="s1">coroutineScope</span><span class="s2">.</span><span class="s1">launch </span><span class="s2">{ </span><span class="s1">pagerState</span><span class="s2">.</span><span class="s1">animateScrollToPage</span><span class="s2">(</span><span class="s3">3</span><span class="s2">) } },</span>
+                <span class="s1">onBackClick </span><span class="s2">= { </span><span class="s1">coroutineScope</span><span class="s2">.</span><span class="s1">launch </span><span class="s2">{ </span><span class="s1">pagerState</span><span class="s2">.</span><span class="s1">animateScrollToPage</span><span class="s2">(</span><span class="s3">1</span><span class="s2">) } }</span>
+            <span class="s2">)</span>
+            <span class="s3">3 </span><span class="s2">-&gt; </span><span class="s1">FourthPageScreen</span><span class="s2">(</span>
+                <span class="s1">selectedThemeColor </span><span class="s2">= </span><span class="s1">currentThemeColor</span><span class="s2">,</span>
+                <span class="s1">manualDbLevels </span><span class="s2">= </span><span class="s1">manualDbLevels</span><span class="s2">, </span><span class="s5">// This will now work</span>
+                <span class="s1">onBackClick </span><span class="s2">= { </span><span class="s1">coroutineScope</span><span class="s2">.</span><span class="s1">launch </span><span class="s2">{ </span><span class="s1">pagerState</span><span class="s2">.</span><span class="s1">animateScrollToPage</span><span class="s2">(</span><span class="s3">2</span><span class="s2">) } }</span>
+            <span class="s2">)</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">FirstPageScreen</span><span class="s2">(</span>
+    <span class="s1">themeColor: Color</span><span class="s2">,</span>
+    <span class="s1">onArrowClick: </span><span class="s2">() -&gt; </span><span class="s1">Unit</span><span class="s2">) {</span>
+    <span class="s0">val </span><span class="s1">configuration </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">platform</span><span class="s2">.</span><span class="s1">LocalConfiguration</span><span class="s2">.</span><span class="s1">current</span>
+    <span class="s0">val </span><span class="s1">screenWidth </span><span class="s2">= </span><span class="s1">configuration</span><span class="s2">.</span><span class="s1">screenWidthDp</span>
+    <span class="s0">val </span><span class="s1">screenHeight </span><span class="s2">= </span><span class="s1">configuration</span><span class="s2">.</span><span class="s1">screenHeightDp</span>
+
+    <span class="s5">// Generate random symbols once and remember them</span>
+    <span class="s0">val </span><span class="s1">randomSymbols </span><span class="s2">= </span><span class="s1">remember </span><span class="s2">{</span>
+        <span class="s0">val </span><span class="s1">options </span><span class="s2">= </span><span class="s1">listOf</span><span class="s2">(</span>
+            <span class="s4">&quot;ppp&quot;</span><span class="s2">, </span><span class="s4">&quot;pp&quot;</span><span class="s2">, </span><span class="s4">&quot;p&quot;</span><span class="s2">, </span><span class="s4">&quot;mp&quot;</span><span class="s2">, </span><span class="s4">&quot;mf&quot;</span><span class="s2">, </span><span class="s4">&quot;f&quot;</span><span class="s2">, </span><span class="s4">&quot;ff&quot;</span><span class="s2">, </span><span class="s4">&quot;fff&quot;</span><span class="s2">,</span>
+            <span class="s4">&quot;piano&quot;</span><span class="s2">, </span><span class="s4">&quot;mezzo-piano&quot;</span><span class="s2">, </span><span class="s4">&quot;mezzo-forte&quot;</span><span class="s2">, </span><span class="s4">&quot;forte&quot;</span><span class="s2">, </span><span class="s4">&quot;fortissimo&quot;</span><span class="s2">,</span>
+            <span class="s4">&quot;fortississimo&quot;</span><span class="s2">, </span><span class="s4">&quot;pianissimo&quot;</span><span class="s2">, </span><span class="s4">&quot;pianississimo&quot;</span>
+        <span class="s2">)</span>
+
+        <span class="s0">val </span><span class="s1">safeZoneWidth </span><span class="s2">= </span><span class="s1">screenWidth </span><span class="s2">* </span><span class="s3">1.0</span>
+        <span class="s0">val </span><span class="s1">safeZoneHeight </span><span class="s2">= </span><span class="s1">screenHeight </span><span class="s2">* </span><span class="s3">0.6</span>
+
+        <span class="s0">val </span><span class="s1">symbols </span><span class="s2">= </span><span class="s1">mutableListOf</span><span class="s2">&lt;</span><span class="s1">SymbolData</span><span class="s2">&gt;()</span>
+
+        <span class="s1">repeat</span><span class="s2">(</span><span class="s3">20</span><span class="s2">) {</span>
+            <span class="s0">var </span><span class="s1">xOffset: Int</span>
+            <span class="s0">var </span><span class="s1">yOffset: Int</span>
+            <span class="s0">var </span><span class="s1">safetyCheckCounter </span><span class="s2">= </span><span class="s3">0</span>
+
+            <span class="s0">do </span><span class="s2">{</span>
+                <span class="s1">xOffset </span><span class="s2">= </span><span class="s1">Random</span><span class="s2">.</span><span class="s1">nextInt</span><span class="s2">(-</span><span class="s1">screenWidth </span><span class="s2">/ </span><span class="s3">2</span><span class="s2">, </span><span class="s1">screenWidth </span><span class="s2">/ </span><span class="s3">2</span><span class="s2">)</span>
+                <span class="s1">yOffset </span><span class="s2">= </span><span class="s1">Random</span><span class="s2">.</span><span class="s1">nextInt</span><span class="s2">(-</span><span class="s1">screenHeight </span><span class="s2">/ </span><span class="s3">2</span><span class="s2">, </span><span class="s1">screenHeight </span><span class="s2">/ </span><span class="s3">2</span><span class="s2">)</span>
+
+                <span class="s0">val </span><span class="s1">inSafeZoneX </span><span class="s2">= </span><span class="s1">xOffset </span><span class="s2">&gt; -</span><span class="s1">safeZoneWidth </span><span class="s2">/ </span><span class="s3">2 </span><span class="s2">&amp;&amp; </span><span class="s1">xOffset </span><span class="s2">&lt; </span><span class="s1">safeZoneWidth </span><span class="s2">/ </span><span class="s3">2</span>
+                <span class="s0">val </span><span class="s1">inSafeZoneY </span><span class="s2">= </span><span class="s1">yOffset </span><span class="s2">&gt; -</span><span class="s1">safeZoneHeight </span><span class="s2">/ </span><span class="s3">2 </span><span class="s2">&amp;&amp; </span><span class="s1">yOffset </span><span class="s2">&lt; </span><span class="s1">safeZoneHeight </span><span class="s2">/ </span><span class="s3">2</span>
+
+                <span class="s1">safetyCheckCounter</span><span class="s2">++</span>
+            <span class="s2">} </span><span class="s0">while </span><span class="s2">(</span><span class="s1">inSafeZoneX </span><span class="s2">&amp;&amp; </span><span class="s1">inSafeZoneY </span><span class="s2">&amp;&amp; </span><span class="s1">safetyCheckCounter </span><span class="s2">&lt; </span><span class="s3">50</span><span class="s2">)</span>
+
+            <span class="s1">symbols</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span>
+                <span class="s1">SymbolData</span><span class="s2">(</span>
+                    <span class="s1">text </span><span class="s2">= </span><span class="s1">options</span><span class="s2">.</span><span class="s1">random</span><span class="s2">(),</span>
+                    <span class="s1">xOffset </span><span class="s2">= </span><span class="s1">xOffset</span><span class="s2">,</span>
+                    <span class="s1">yOffset </span><span class="s2">= </span><span class="s1">yOffset</span><span class="s2">,</span>
+                    <span class="s1">rotation </span><span class="s2">= </span><span class="s1">Random</span><span class="s2">.</span><span class="s1">nextFloat</span><span class="s2">() * </span><span class="s3">360f</span><span class="s2">,</span>
+                    <span class="s1">size </span><span class="s2">= </span><span class="s1">Random</span><span class="s2">.</span><span class="s1">nextInt</span><span class="s2">(</span><span class="s3">15</span><span class="s2">, </span><span class="s3">40</span><span class="s2">),</span>
+                    <span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">(</span>
+                        <span class="s1">red </span><span class="s2">= </span><span class="s1">Random</span><span class="s2">.</span><span class="s1">nextFloat</span><span class="s2">(),</span>
+                        <span class="s1">green </span><span class="s2">= </span><span class="s1">Random</span><span class="s2">.</span><span class="s1">nextFloat</span><span class="s2">(),</span>
+                        <span class="s1">blue </span><span class="s2">= </span><span class="s1">Random</span><span class="s2">.</span><span class="s1">nextFloat</span><span class="s2">(),</span>
+                        <span class="s1">alpha </span><span class="s2">= </span><span class="s3">0.5f</span>
+                    <span class="s2">)</span>
+                <span class="s2">)</span>
+            <span class="s2">)</span>
+        <span class="s2">}</span>
+        <span class="s1">symbols</span><span class="s2">.</span><span class="s1">toList</span><span class="s2">()</span>
+    <span class="s2">}</span>
+
+    <span class="s1">Box</span><span class="s2">(</span>
+        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">(),</span>
+        <span class="s1">contentAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">Center</span>
+    <span class="s2">) {</span>
+        <span class="s5">// --- LAYER 1: RANDOM BACKGROUND SYMBOLS ---</span>
+        <span class="s1">randomSymbols</span><span class="s2">.</span><span class="s1">forEach </span><span class="s2">{ </span><span class="s1">symbol </span><span class="s2">-&gt;</span>
+            <span class="s1">Text</span><span class="s2">(</span>
+                <span class="s1">text </span><span class="s2">= </span><span class="s1">symbol</span><span class="s2">.</span><span class="s1">text</span><span class="s2">,</span>
+                <span class="s1">fontSize </span><span class="s2">= </span><span class="s1">symbol</span><span class="s2">.</span><span class="s1">size</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">color </span><span class="s2">= </span><span class="s1">symbol</span><span class="s2">.</span><span class="s1">color</span><span class="s2">,</span>
+                <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                    <span class="s2">.</span><span class="s1">offset</span><span class="s2">(</span><span class="s1">x </span><span class="s2">= </span><span class="s1">symbol</span><span class="s2">.</span><span class="s1">xOffset</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">, </span><span class="s1">y </span><span class="s2">= </span><span class="s1">symbol</span><span class="s2">.</span><span class="s1">yOffset</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+                    <span class="s2">.</span><span class="s1">graphicsLayer</span><span class="s2">(</span><span class="s1">rotationZ </span><span class="s2">= </span><span class="s1">symbol</span><span class="s2">.</span><span class="s1">rotation</span><span class="s2">)</span>
+            <span class="s2">)</span>
+        <span class="s2">}</span>
+
+        <span class="s5">// --- LAYER 2: MAIN CONTENT ---</span>
+        <span class="s1">Column</span><span class="s2">(</span>
+            <span class="s1">horizontalAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterHorizontally</span><span class="s2">,</span>
+            <span class="s1">verticalArrangement </span><span class="s2">= </span><span class="s1">Arrangement</span><span class="s2">.</span><span class="s1">Center</span><span class="s2">,</span>
+            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+        <span class="s2">) {</span>
+            <span class="s1">Text</span><span class="s2">(</span>
+                <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;Welcome to &quot;</span><span class="s2">,</span>
+                <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">32</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">fontFamily </span><span class="s2">= </span><span class="s1">FontFamily</span><span class="s2">.</span><span class="s1">Cursive</span><span class="s2">,</span>
+                <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">ExtraBold</span><span class="s2">,</span>
+                <span class="s1">letterSpacing </span><span class="s2">= </span><span class="s3">2</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">DarkGray</span>
+            <span class="s2">)</span>
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+            <span class="s1">Text</span><span class="s2">(</span>
+                <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;DYNAMUSIC&quot;</span><span class="s2">,</span>
+                <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">34</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">ExtraBold</span><span class="s2">,</span>
+                <span class="s1">letterSpacing </span><span class="s2">= </span><span class="s3">2</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">style </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">TextStyle</span><span class="s2">(</span>
+                    <span class="s1">shadow </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">graphics</span><span class="s2">.</span><span class="s1">Shadow</span><span class="s2">(</span>
+                        <span class="s1">color </span><span class="s2">= </span><span class="s1">themeColor</span><span class="s2">, </span><span class="s5">// &lt;--- USE THE PARAMETER HERE</span>
+                        <span class="s1">blurRadius </span><span class="s2">= </span><span class="s3">8f</span>
+                    <span class="s2">)</span>
+                <span class="s2">)</span>
+            <span class="s2">)</span>
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+            <span class="s1">Text</span><span class="s2">(</span>
+                <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;a tool for singers and instrumentalists, to help when practicing dynamics.&quot;</span><span class="s2">,</span>
+                <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">30</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">fontFamily </span><span class="s2">= </span><span class="s1">FontFamily</span><span class="s2">.</span><span class="s1">Cursive</span><span class="s2">,</span>
+                <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">ExtraBold</span><span class="s2">,</span>
+                <span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">DarkGray</span><span class="s2">,</span>
+                <span class="s1">textAlign </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">style</span><span class="s2">.</span><span class="s1">TextAlign</span><span class="s2">.</span><span class="s1">Center</span><span class="s2">,</span>
+                <span class="s1">lineHeight </span><span class="s2">= </span><span class="s3">30</span><span class="s2">.</span><span class="s1">sp</span>
+
+            <span class="s2">)</span>
+            <span class="s1">PageIndicator</span><span class="s2">(</span>
+                <span class="s1">currentPageIndex </span><span class="s2">= </span><span class="s3">0</span><span class="s2">,</span>
+                <span class="s1">themeColor </span><span class="s2">= </span><span class="s1">themeColor</span>
+            <span class="s2">)</span>
+
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">10</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">SecondPageScreen</span><span class="s2">(</span>
+    <span class="s1">themeColor: Color</span><span class="s2">,</span>
+    <span class="s1">selectedMode: String</span><span class="s2">,</span>
+    <span class="s5">// --- ADDED THIS PARAMETER ---</span>
+    <span class="s1">manualDbLevels: androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">snapshots</span><span class="s2">.</span><span class="s1">SnapshotStateMap</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Float</span><span class="s2">&gt;,</span>
+    <span class="s1">onNextClick: </span><span class="s2">() -&gt; </span><span class="s1">Unit</span><span class="s2">,</span>
+    <span class="s1">onBackClick: </span><span class="s2">() -&gt; </span><span class="s1">Unit</span>
+<span class="s2">) {</span>
+    <span class="s0">val </span><span class="s1">context </span><span class="s2">= </span><span class="s1">LocalContext</span><span class="s2">.</span><span class="s1">current</span>
+    <span class="s0">val </span><span class="s1">configuration </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">platform</span><span class="s2">.</span><span class="s1">LocalConfiguration</span><span class="s2">.</span><span class="s1">current</span>
+    <span class="s0">val </span><span class="s1">screenWidth </span><span class="s2">= </span><span class="s1">configuration</span><span class="s2">.</span><span class="s1">screenWidthDp</span><span class="s2">.</span><span class="s1">dp</span>
+    <span class="s0">val </span><span class="s1">screenHeight </span><span class="s2">= </span><span class="s1">configuration</span><span class="s2">.</span><span class="s1">screenHeightDp</span><span class="s2">.</span><span class="s1">dp</span>
+
+    <span class="s0">var </span><span class="s1">hasPermission by remember </span><span class="s2">{</span>
+        <span class="s1">mutableStateOf</span><span class="s2">(</span>
+            <span class="s1">ActivityCompat</span><span class="s2">.</span><span class="s1">checkSelfPermission</span><span class="s2">(</span>
+                <span class="s1">context</span><span class="s2">,</span>
+                <span class="s1">Manifest</span><span class="s2">.</span><span class="s1">permission</span><span class="s2">.</span><span class="s1">RECORD_AUDIO</span>
+            <span class="s2">) == </span><span class="s1">PackageManager</span><span class="s2">.</span><span class="s1">PERMISSION_GRANTED</span>
+        <span class="s2">)</span>
+    <span class="s2">}</span>
+
+    <span class="s0">var </span><span class="s1">decibels by remember </span><span class="s2">{ </span><span class="s1">mutableDoubleStateOf</span><span class="s2">(</span><span class="s3">0.0</span><span class="s2">) }</span>
+
+    <span class="s5">// --- CALIBRATION STATE ---</span>
+    <span class="s0">var </span><span class="s1">isCalibrating by remember </span><span class="s2">{ </span><span class="s1">mutableStateOf</span><span class="s2">(</span><span class="s0">false</span><span class="s2">) }</span>
+    <span class="s0">var </span><span class="s1">calibrationProgress by remember </span><span class="s2">{ </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">mutableIntStateOf</span><span class="s2">(</span><span class="s3">5</span><span class="s2">) }</span>
+    <span class="s0">var </span><span class="s1">averageAmbientDb by remember </span><span class="s2">{ </span><span class="s1">mutableIntStateOf</span><span class="s2">(</span><span class="s3">0</span><span class="s2">) }</span>
+    <span class="s0">val </span><span class="s1">calibrationReadings </span><span class="s2">= </span><span class="s1">remember </span><span class="s2">{ </span><span class="s1">mutableListOf</span><span class="s2">&lt;</span><span class="s1">Double</span><span class="s2">&gt;() }</span>
+
+    <span class="s0">val </span><span class="s1">permissionLauncher </span><span class="s2">= </span><span class="s1">rememberLauncherForActivityResult</span><span class="s2">(</span>
+        <span class="s1">contract </span><span class="s2">= </span><span class="s1">ActivityResultContracts</span><span class="s2">.</span><span class="s1">RequestPermission</span><span class="s2">(),</span>
+        <span class="s1">onResult </span><span class="s2">= { </span><span class="s1">isGranted </span><span class="s2">-&gt;</span>
+            <span class="s1">hasPermission </span><span class="s2">= </span><span class="s1">isGranted</span>
+            <span class="s0">if </span><span class="s2">(!</span><span class="s1">isGranted</span><span class="s2">) {</span>
+                <span class="s1">Toast</span><span class="s2">.</span><span class="s1">makeText</span><span class="s2">(</span><span class="s1">context</span><span class="s2">, </span><span class="s4">&quot;Microphone permission needed&quot;</span><span class="s2">, </span><span class="s1">Toast</span><span class="s2">.</span><span class="s1">LENGTH_SHORT</span><span class="s2">).</span><span class="s1">show</span><span class="s2">()</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">)</span>
+
+    <span class="s0">val </span><span class="s1">recorder </span><span class="s2">= </span><span class="s1">remember </span><span class="s2">{ </span><span class="s1">AudioRecorder</span><span class="s2">() }</span>
+    <span class="s0">val </span><span class="s1">coroutineScope </span><span class="s2">= </span><span class="s1">rememberCoroutineScope</span><span class="s2">()</span>
+
+    <span class="s1">DisposableEffect</span><span class="s2">(</span><span class="s1">hasPermission</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">hasPermission</span><span class="s2">) { </span><span class="s1">recorder</span><span class="s2">.</span><span class="s1">start</span><span class="s2">() }</span>
+        <span class="s1">onDispose </span><span class="s2">{ </span><span class="s1">recorder</span><span class="s2">.</span><span class="s1">stop</span><span class="s2">() }</span>
+    <span class="s2">}</span>
+
+    <span class="s1">LaunchedEffect</span><span class="s2">(</span><span class="s1">hasPermission</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">hasPermission</span><span class="s2">) {</span>
+            <span class="s1">withContext</span><span class="s2">(</span><span class="s1">Dispatchers</span><span class="s2">.</span><span class="s1">IO</span><span class="s2">) {</span>
+                <span class="s0">while </span><span class="s2">(</span><span class="s1">isActive</span><span class="s2">) {</span>
+                    <span class="s0">val </span><span class="s1">amplitude </span><span class="s2">= </span><span class="s1">recorder</span><span class="s2">.</span><span class="s1">getMaxAmplitude</span><span class="s2">()</span>
+                    <span class="s0">if </span><span class="s2">(</span><span class="s1">amplitude </span><span class="s2">&gt; </span><span class="s3">0</span><span class="s2">) {</span>
+                        <span class="s0">val </span><span class="s1">db </span><span class="s2">= </span><span class="s3">20 </span><span class="s2">* </span><span class="s1">log10</span><span class="s2">(</span><span class="s1">amplitude</span><span class="s2">.</span><span class="s1">toDouble</span><span class="s2">())</span>
+                        <span class="s1">withContext</span><span class="s2">(</span><span class="s1">Dispatchers</span><span class="s2">.</span><span class="s1">Main</span><span class="s2">) {</span>
+                            <span class="s1">decibels </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">db </span><span class="s2">&gt; </span><span class="s3">0</span><span class="s2">) </span><span class="s1">db </span><span class="s0">else </span><span class="s3">0.0</span>
+                        <span class="s2">}</span>
+                    <span class="s2">}</span>
+                    <span class="s1">delay</span><span class="s2">(</span><span class="s3">200</span><span class="s2">)</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s1">Box</span><span class="s2">(</span>
+        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">()</span>
+    <span class="s2">) {</span>
+        <span class="s1">Column</span><span class="s2">(</span>
+            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                <span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">verticalScroll</span><span class="s2">(</span><span class="s1">rememberScrollState</span><span class="s2">()),</span>
+            <span class="s1">horizontalAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterHorizontally</span><span class="s2">,</span>
+            <span class="s1">verticalArrangement </span><span class="s2">= </span><span class="s1">Arrangement</span><span class="s2">.</span><span class="s1">Center</span>
+        <span class="s2">) {</span>
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">20</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+            <span class="s1">Text</span><span class="s2">(</span>
+                <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;DYNAMUSIC&quot;</span><span class="s2">,</span>
+                <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">28</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">,</span>
+                <span class="s1">style </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">TextStyle</span><span class="s2">(</span>
+                    <span class="s1">shadow </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">graphics</span><span class="s2">.</span><span class="s1">Shadow</span><span class="s2">(</span>
+                        <span class="s1">color </span><span class="s2">= </span><span class="s1">themeColor</span><span class="s2">,</span>
+                        <span class="s1">blurRadius </span><span class="s2">= </span><span class="s3">8f</span>
+                    <span class="s2">)</span>
+                <span class="s2">)</span>
+            <span class="s2">)</span>
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">24</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">hasPermission</span><span class="s2">) {</span>
+                <span class="s1">repeat</span><span class="s2">(</span><span class="s3">9</span><span class="s2">) { </span><span class="s1">index </span><span class="s2">-&gt;</span>
+                    <span class="s0">val </span><span class="s1">isCalibrationButton </span><span class="s2">= (</span><span class="s1">index </span><span class="s2">== </span><span class="s3">8</span><span class="s2">)</span>
+                    <span class="s0">val </span><span class="s1">buttonHeight </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">isCalibrationButton</span><span class="s2">) </span><span class="s1">screenHeight </span><span class="s2">* </span><span class="s3">0.18f </span><span class="s0">else </span><span class="s1">screenHeight </span><span class="s2">* </span><span class="s3">0.06f</span>
+
+                    <span class="s5">// 1. Calculate the Threshold based on Mode</span>
+                    <span class="s0">var </span><span class="s1">thresholdDb </span><span class="s2">= </span><span class="s3">0</span>
+
+                    <span class="s5">// --- LOGIC UPDATE FOR MANUAL MODE ---</span>
+                    <span class="s0">if </span><span class="s2">(</span><span class="s1">selectedMode </span><span class="s2">== </span><span class="s4">&quot;Manual&quot; </span><span class="s2">&amp;&amp; </span><span class="s1">index </span><span class="s2">&lt; </span><span class="s3">8</span><span class="s2">) {</span>
+                        <span class="s5">// Map index 0-7 to &quot;fff&quot;-&quot;ppp&quot;</span>
+                        <span class="s0">val </span><span class="s1">key </span><span class="s2">= </span><span class="s0">when</span><span class="s2">(</span><span class="s1">index</span><span class="s2">) {</span>
+                            <span class="s3">0 </span><span class="s2">-&gt; </span><span class="s4">&quot;fff&quot;</span>
+                            <span class="s3">1 </span><span class="s2">-&gt; </span><span class="s4">&quot;ff&quot;</span>
+                            <span class="s3">2 </span><span class="s2">-&gt; </span><span class="s4">&quot;f&quot;</span>
+                            <span class="s3">3 </span><span class="s2">-&gt; </span><span class="s4">&quot;mf&quot;</span>
+                            <span class="s3">4 </span><span class="s2">-&gt; </span><span class="s4">&quot;mp&quot;</span>
+                            <span class="s3">5 </span><span class="s2">-&gt; </span><span class="s4">&quot;p&quot;</span>
+                            <span class="s3">6 </span><span class="s2">-&gt; </span><span class="s4">&quot;pp&quot;</span>
+                            <span class="s3">7 </span><span class="s2">-&gt; </span><span class="s4">&quot;ppp&quot;</span>
+                            <span class="s0">else </span><span class="s2">-&gt; </span><span class="s4">&quot;&quot;</span>
+                        <span class="s2">}</span>
+                        <span class="s1">thresholdDb </span><span class="s2">= </span><span class="s1">manualDbLevels</span><span class="s2">[</span><span class="s1">key</span><span class="s2">]</span><span class="s1">?</span><span class="s2">.</span><span class="s1">toInt</span><span class="s2">() </span><span class="s1">?: </span><span class="s3">0</span>
+                        <span class="s5">// Use a dummy ambient value so buttons light up without calibration</span>
+                        <span class="s0">if </span><span class="s2">(</span><span class="s1">averageAmbientDb </span><span class="s2">== </span><span class="s3">0</span><span class="s2">) </span><span class="s1">averageAmbientDb </span><span class="s2">= </span><span class="s3">1</span>
+                    <span class="s2">}</span>
+                    <span class="s5">// --- STANDARD MODES (Voice, Instruments, Percussion) ---</span>
+                    <span class="s0">else if </span><span class="s2">(</span><span class="s1">averageAmbientDb </span><span class="s2">&gt; </span><span class="s3">0 </span><span class="s2">&amp;&amp; </span><span class="s1">index </span><span class="s2">&lt; </span><span class="s3">8</span><span class="s2">) {</span>
+                        <span class="s0">val </span><span class="s1">offset </span><span class="s2">= </span><span class="s0">when </span><span class="s2">(</span><span class="s1">selectedMode</span><span class="s2">) {</span>
+                            <span class="s4">&quot;Voice&quot; </span><span class="s2">-&gt; {</span>
+                                <span class="s0">when </span><span class="s2">(</span><span class="s1">index</span><span class="s2">) {</span>
+                                    <span class="s3">7 </span><span class="s2">-&gt; </span><span class="s3">18</span><span class="s2">; </span><span class="s3">6 </span><span class="s2">-&gt; </span><span class="s3">30</span><span class="s2">; </span><span class="s3">5 </span><span class="s2">-&gt; </span><span class="s3">38</span><span class="s2">; </span><span class="s3">4 </span><span class="s2">-&gt; </span><span class="s3">44</span><span class="s2">; </span><span class="s3">3 </span><span class="s2">-&gt; </span><span class="s3">48</span><span class="s2">; </span><span class="s3">2 </span><span class="s2">-&gt; </span><span class="s3">51</span><span class="s2">; </span><span class="s3">1 </span><span class="s2">-&gt; </span><span class="s3">53</span><span class="s2">; </span><span class="s3">0 </span><span class="s2">-&gt; </span><span class="s3">54</span><span class="s2">; </span><span class="s0">else </span><span class="s2">-&gt; </span><span class="s3">0</span>
+                                <span class="s2">}</span>
+                            <span class="s2">}</span>
+                            <span class="s4">&quot;Instruments&quot; </span><span class="s2">-&gt; {</span>
+                                <span class="s0">when </span><span class="s2">(</span><span class="s1">index</span><span class="s2">) {</span>
+                                    <span class="s3">7 </span><span class="s2">-&gt; </span><span class="s3">12</span><span class="s2">; </span><span class="s3">6 </span><span class="s2">-&gt; </span><span class="s3">22</span><span class="s2">; </span><span class="s3">5 </span><span class="s2">-&gt; </span><span class="s3">31</span><span class="s2">; </span><span class="s3">4 </span><span class="s2">-&gt; </span><span class="s3">39</span><span class="s2">; </span><span class="s3">3 </span><span class="s2">-&gt; </span><span class="s3">46</span><span class="s2">; </span><span class="s3">2 </span><span class="s2">-&gt; </span><span class="s3">52</span><span class="s2">; </span><span class="s3">1 </span><span class="s2">-&gt; </span><span class="s3">57</span><span class="s2">; </span><span class="s3">0 </span><span class="s2">-&gt; </span><span class="s3">61</span><span class="s2">; </span><span class="s0">else </span><span class="s2">-&gt; </span><span class="s3">0</span>
+                                <span class="s2">}</span>
+                            <span class="s2">}</span>
+                            <span class="s4">&quot;Percussion&quot; </span><span class="s2">-&gt; (</span><span class="s3">8 </span><span class="s2">- </span><span class="s1">index</span><span class="s2">) * </span><span class="s3">8</span>
+                            <span class="s0">else </span><span class="s2">-&gt; </span><span class="s3">0</span>
+                        <span class="s2">}</span>
+                        <span class="s1">thresholdDb </span><span class="s2">= </span><span class="s1">averageAmbientDb </span><span class="s2">+ </span><span class="s1">offset</span>
+                    <span class="s2">}</span>
+
+                    <span class="s5">// 2. Logic for button color:</span>
+                    <span class="s0">val </span><span class="s1">isActive </span><span class="s2">= !</span><span class="s1">isCalibrationButton </span><span class="s2">&amp;&amp; </span><span class="s1">thresholdDb </span><span class="s2">&gt; </span><span class="s3">0 </span><span class="s2">&amp;&amp; </span><span class="s1">decibels </span><span class="s2">&gt;= </span><span class="s1">thresholdDb</span>
+
+                    <span class="s0">val </span><span class="s1">baseColor </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">isCalibrationButton</span><span class="s2">) {</span>
+                        <span class="s1">Color</span><span class="s2">.</span><span class="s1">Transparent</span>
+                    <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">isActive</span><span class="s2">) {</span>
+                        <span class="s1">themeColor</span>
+                    <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                        <span class="s1">Color</span><span class="s2">.</span><span class="s1">Gray</span>
+                    <span class="s2">}</span>
+
+                    <span class="s0">val </span><span class="s1">animatedColor by animateColorAsState</span><span class="s2">(</span><span class="s1">targetValue </span><span class="s2">= </span><span class="s1">baseColor</span><span class="s2">, </span><span class="s1">label </span><span class="s2">= </span><span class="s4">&quot;ButtonColor&quot;</span><span class="s2">)</span>
+
+                    <span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">material3</span><span class="s2">.</span><span class="s1">Surface</span><span class="s2">(</span>
+                        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                            <span class="s2">.</span><span class="s1">width</span><span class="s2">(</span><span class="s1">screenWidth </span><span class="s2">* </span><span class="s3">0.8f</span><span class="s2">)</span>
+                            <span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s1">buttonHeight</span><span class="s2">),</span>
+                        <span class="s1">color </span><span class="s2">= </span><span class="s1">animatedColor</span><span class="s2">,</span>
+                        <span class="s1">shape </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">shape</span><span class="s2">.</span><span class="s1">RoundedCornerShape</span><span class="s2">(</span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">),</span>
+                        <span class="s1">shadowElevation </span><span class="s2">= </span><span class="s3">4</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">,</span>
+                        <span class="s1">border </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">BorderStroke</span><span class="s2">(</span>
+                            <span class="s1">width </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">isCalibrationButton</span><span class="s2">) </span><span class="s3">2</span><span class="s2">.</span><span class="s1">dp </span><span class="s0">else </span><span class="s3">1</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">,</span>
+                            <span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Black</span>
+                        <span class="s2">),</span>
+                        <span class="s1">onClick </span><span class="s2">= {</span>
+                            <span class="s0">if </span><span class="s2">(</span><span class="s1">isCalibrationButton </span><span class="s2">&amp;&amp; !</span><span class="s1">isCalibrating </span><span class="s2">&amp;&amp; </span><span class="s1">selectedMode </span><span class="s2">!= </span><span class="s4">&quot;Manual&quot;</span><span class="s2">) {</span>
+                                <span class="s1">isCalibrating </span><span class="s2">= </span><span class="s0">true</span>
+                                <span class="s1">calibrationProgress </span><span class="s2">= </span><span class="s3">0</span>
+                                <span class="s1">calibrationReadings</span><span class="s2">.</span><span class="s1">clear</span><span class="s2">()</span>
+
+                                <span class="s1">coroutineScope</span><span class="s2">.</span><span class="s1">launch </span><span class="s2">{</span>
+                                    <span class="s1">repeat</span><span class="s2">(</span><span class="s3">5</span><span class="s2">) {</span>
+                                        <span class="s1">delay</span><span class="s2">(</span><span class="s3">1000</span><span class="s2">)</span>
+                                        <span class="s1">calibrationReadings</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">decibels</span><span class="s2">)</span>
+                                        <span class="s1">calibrationProgress </span><span class="s2">+= </span><span class="s3">1</span>
+                                    <span class="s2">}</span>
+                                    <span class="s0">if </span><span class="s2">(</span><span class="s1">calibrationReadings</span><span class="s2">.</span><span class="s1">isNotEmpty</span><span class="s2">()) {</span>
+                                        <span class="s1">averageAmbientDb </span><span class="s2">= </span><span class="s1">calibrationReadings</span><span class="s2">.</span><span class="s1">average</span><span class="s2">().</span><span class="s1">toInt</span><span class="s2">()</span>
+                                    <span class="s2">}</span>
+                                    <span class="s1">isCalibrating </span><span class="s2">= </span><span class="s0">false</span>
+                                <span class="s2">}</span>
+                            <span class="s2">}</span>
+                        <span class="s2">},</span>
+                        <span class="s1">enabled </span><span class="s2">= </span><span class="s1">isCalibrationButton </span><span class="s2">|| </span><span class="s1">index </span><span class="s2">!= </span><span class="s3">8</span>
+                    <span class="s2">) {</span>
+                        <span class="s1">Box</span><span class="s2">(</span>
+                            <span class="s1">contentAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">Center</span><span class="s2">,</span>
+                            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">()</span>
+                        <span class="s2">) {</span>
+                            <span class="s0">if </span><span class="s2">(</span><span class="s1">isCalibrationButton</span><span class="s2">) {</span>
+                                <span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Row</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">()) {</span>
+                                    <span class="s1">repeat</span><span class="s2">(</span><span class="s3">5</span><span class="s2">) { </span><span class="s1">sectionIndex </span><span class="s2">-&gt;</span>
+                                        <span class="s0">val </span><span class="s1">sectionColor </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">sectionIndex </span><span class="s2">&lt; </span><span class="s1">calibrationProgress</span><span class="s2">) </span><span class="s1">themeColor </span><span class="s0">else </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">LightGray</span>
+                                        <span class="s1">Box</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">weight</span><span class="s2">(</span><span class="s3">1f</span><span class="s2">).</span><span class="s1">fillMaxSize</span><span class="s2">().</span><span class="s1">background</span><span class="s2">(</span><span class="s1">sectionColor</span><span class="s2">))</span>
+                                        <span class="s0">if </span><span class="s2">(</span><span class="s1">sectionIndex </span><span class="s2">&lt; </span><span class="s3">4 </span><span class="s2">&amp;&amp; </span><span class="s1">isCalibrating</span><span class="s2">) {</span>
+                                            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">width</span><span class="s2">(</span><span class="s3">1</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">).</span><span class="s1">background</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Black</span><span class="s2">.</span><span class="s1">copy</span><span class="s2">(</span><span class="s1">alpha </span><span class="s2">= </span><span class="s3">0.1f</span><span class="s2">)))</span>
+                                        <span class="s2">}</span>
+                                    <span class="s2">}</span>
+                                <span class="s2">}</span>
+                            <span class="s2">}</span>
+
+                            <span class="s0">if </span><span class="s2">(</span><span class="s1">index </span><span class="s2">== </span><span class="s3">8</span><span class="s2">) {</span>
+                                <span class="s0">val </span><span class="s1">displayAverage </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">averageAmbientDb </span><span class="s2">&gt; </span><span class="s3">0</span><span class="s2">) </span><span class="s4">&quot;</span><span class="s0">$</span><span class="s1">averageAmbientDb </span><span class="s4">dB&quot; </span><span class="s0">else </span><span class="s4">&quot;&quot;</span>
+                                <span class="s0">val </span><span class="s1">infiniteTransition </span><span class="s2">= </span><span class="s1">rememberInfiniteTransition</span><span class="s2">(</span><span class="s1">label </span><span class="s2">= </span><span class="s4">&quot;PulseTransition&quot;</span><span class="s2">)</span>
+                                <span class="s0">val </span><span class="s1">alpha by infiniteTransition</span><span class="s2">.</span><span class="s1">animateFloat</span><span class="s2">(</span>
+                                    <span class="s1">initialValue </span><span class="s2">= </span><span class="s3">1f</span><span class="s2">,</span>
+                                    <span class="s1">targetValue </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">averageAmbientDb </span><span class="s2">== </span><span class="s3">0 </span><span class="s2">&amp;&amp; !</span><span class="s1">isCalibrating </span><span class="s2">&amp;&amp; </span><span class="s1">selectedMode </span><span class="s2">!= </span><span class="s4">&quot;Manual&quot;</span><span class="s2">) </span><span class="s3">0.3f </span><span class="s0">else </span><span class="s3">1f</span><span class="s2">,</span>
+                                    <span class="s1">animationSpec </span><span class="s2">= </span><span class="s1">infiniteRepeatable</span><span class="s2">(</span>
+                                        <span class="s1">animation </span><span class="s2">= </span><span class="s1">tween</span><span class="s2">(</span><span class="s3">1000</span><span class="s2">, </span><span class="s1">easing </span><span class="s2">= </span><span class="s1">LinearEasing</span><span class="s2">),</span>
+                                        <span class="s1">repeatMode </span><span class="s2">= </span><span class="s1">RepeatMode</span><span class="s2">.</span><span class="s1">Reverse</span>
+                                    <span class="s2">),</span>
+                                    <span class="s1">label </span><span class="s2">= </span><span class="s4">&quot;PulseAlpha&quot;</span>
+                                <span class="s2">)</span>
+
+                                <span class="s0">val </span><span class="s1">calibrationText </span><span class="s2">= </span><span class="s0">when </span><span class="s2">{</span>
+                                    <span class="s1">isCalibrating </span><span class="s2">-&gt; </span><span class="s4">&quot;CALIBRATING...</span><span class="s0">\n</span><span class="s4">Please stay silent.&quot;</span>
+                                    <span class="s1">selectedMode </span><span class="s2">== </span><span class="s4">&quot;Manual&quot; </span><span class="s2">-&gt; </span><span class="s4">&quot;MANUAL MODE</span><span class="s0">\n</span><span class="s4">Values loaded from settings.&quot;</span>
+                                    <span class="s1">averageAmbientDb </span><span class="s2">== </span><span class="s3">0 </span><span class="s2">-&gt; </span><span class="s4">&quot;Ambient: </span><span class="s0">${</span><span class="s1">String</span><span class="s2">.</span><span class="s1">format</span><span class="s2">(</span><span class="s4">&quot;%.0f&quot;</span><span class="s2">, </span><span class="s1">decibels</span><span class="s2">)</span><span class="s0">} </span><span class="s4">dB </span><span class="s0">\n\n</span><span class="s4">TOUCH TO CALIBRATE&quot;</span>
+                                    <span class="s0">else </span><span class="s2">-&gt; </span><span class="s4">&quot;Ambient: </span><span class="s0">${</span><span class="s1">String</span><span class="s2">.</span><span class="s1">format</span><span class="s2">(</span><span class="s4">&quot;%.0f&quot;</span><span class="s2">, </span><span class="s1">decibels</span><span class="s2">)</span><span class="s0">} </span><span class="s4">dB </span><span class="s0">\n\n</span><span class="s4">Average: </span><span class="s0">$</span><span class="s1">displayAverage </span><span class="s0">\n\n</span><span class="s4">TOUCH TO RE-CALIBRATE&quot;</span>
+                                <span class="s2">}</span>
+
+                                <span class="s1">Text</span><span class="s2">(</span>
+                                    <span class="s1">text </span><span class="s2">= </span><span class="s1">calibrationText</span><span class="s2">,</span>
+                                    <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">17</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                                    <span class="s1">fontStyle </span><span class="s2">= </span><span class="s1">FontStyle</span><span class="s2">.</span><span class="s1">Italic</span><span class="s2">,</span>
+                                    <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">,</span>
+                                    <span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">White</span><span class="s2">.</span><span class="s1">copy</span><span class="s2">(</span><span class="s1">alpha </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">averageAmbientDb </span><span class="s2">== </span><span class="s3">0 </span><span class="s2">&amp;&amp; !</span><span class="s1">isCalibrating </span><span class="s2">&amp;&amp; </span><span class="s1">selectedMode </span><span class="s2">!= </span><span class="s4">&quot;Manual&quot;</span><span class="s2">) </span><span class="s1">alpha </span><span class="s0">else </span><span class="s3">1f</span><span class="s2">),</span>
+                                    <span class="s1">textAlign </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">style</span><span class="s2">.</span><span class="s1">TextAlign</span><span class="s2">.</span><span class="s1">Center</span><span class="s2">,</span>
+                                    <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s3">8</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+                                <span class="s2">)</span>
+                            <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                                <span class="s0">val </span><span class="s2">(</span><span class="s1">abbrText</span><span class="s2">, </span><span class="s1">wordText</span><span class="s2">) = </span><span class="s0">when </span><span class="s2">(</span><span class="s1">index</span><span class="s2">) {</span>
+                                    <span class="s3">0 </span><span class="s2">-&gt; </span><span class="s4">&quot;fff&quot; </span><span class="s1">to </span><span class="s4">&quot;fortississimo&quot;</span><span class="s2">; </span><span class="s3">1 </span><span class="s2">-&gt; </span><span class="s4">&quot;ff&quot; </span><span class="s1">to </span><span class="s4">&quot;fortissimo&quot;</span><span class="s2">; </span><span class="s3">2 </span><span class="s2">-&gt; </span><span class="s4">&quot;f&quot; </span><span class="s1">to </span><span class="s4">&quot;forte&quot;</span>
+                                    <span class="s3">3 </span><span class="s2">-&gt; </span><span class="s4">&quot;mf&quot; </span><span class="s1">to </span><span class="s4">&quot;mezzo-forte&quot;</span><span class="s2">; </span><span class="s3">4 </span><span class="s2">-&gt; </span><span class="s4">&quot;mp&quot; </span><span class="s1">to </span><span class="s4">&quot;mezzo-piano&quot;</span><span class="s2">; </span><span class="s3">5 </span><span class="s2">-&gt; </span><span class="s4">&quot;p&quot; </span><span class="s1">to </span><span class="s4">&quot;piano&quot;</span>
+                                    <span class="s3">6 </span><span class="s2">-&gt; </span><span class="s4">&quot;pp&quot; </span><span class="s1">to </span><span class="s4">&quot;pianissimo&quot;</span><span class="s2">; </span><span class="s3">7 </span><span class="s2">-&gt; </span><span class="s4">&quot;ppp&quot; </span><span class="s1">to </span><span class="s4">&quot;pianississimo&quot;</span>
+                                    <span class="s0">else </span><span class="s2">-&gt; </span><span class="s4">&quot;&quot; </span><span class="s1">to </span><span class="s4">&quot;&quot;</span>
+                                <span class="s2">}</span>
+                                <span class="s0">val </span><span class="s1">dbText </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">thresholdDb </span><span class="s2">&gt; </span><span class="s3">0</span><span class="s2">) </span><span class="s4">&quot;</span><span class="s0">$</span><span class="s1">thresholdDb </span><span class="s4">dB&quot; </span><span class="s0">else </span><span class="s4">&quot;&quot;</span>
+
+                                <span class="s1">Box</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">().</span><span class="s1">padding</span><span class="s2">(</span><span class="s1">horizontal </span><span class="s2">= </span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)) {</span>
+                                    <span class="s1">Text</span><span class="s2">(</span><span class="s1">text </span><span class="s2">= </span><span class="s1">abbrText</span><span class="s2">, </span><span class="s1">fontSize </span><span class="s2">= </span><span class="s3">15</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">, </span><span class="s1">fontStyle </span><span class="s2">= </span><span class="s1">FontStyle</span><span class="s2">.</span><span class="s1">Italic</span><span class="s2">, </span><span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">, </span><span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">White</span><span class="s2">, </span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">align</span><span class="s2">(</span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterStart</span><span class="s2">))</span>
+                                    <span class="s1">Text</span><span class="s2">(</span><span class="s1">text </span><span class="s2">= </span><span class="s1">wordText</span><span class="s2">, </span><span class="s1">fontSize </span><span class="s2">= </span><span class="s3">15</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">, </span><span class="s1">fontStyle </span><span class="s2">= </span><span class="s1">FontStyle</span><span class="s2">.</span><span class="s1">Italic</span><span class="s2">, </span><span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">, </span><span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">White</span><span class="s2">, </span><span class="s1">textAlign </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">style</span><span class="s2">.</span><span class="s1">TextAlign</span><span class="s2">.</span><span class="s1">Center</span><span class="s2">, </span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">align</span><span class="s2">(</span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">Center</span><span class="s2">))</span>
+                                    <span class="s1">Text</span><span class="s2">(</span><span class="s1">text </span><span class="s2">= </span><span class="s1">dbText</span><span class="s2">, </span><span class="s1">fontSize </span><span class="s2">= </span><span class="s3">15</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">, </span><span class="s1">fontStyle </span><span class="s2">= </span><span class="s1">FontStyle</span><span class="s2">.</span><span class="s1">Italic</span><span class="s2">, </span><span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">, </span><span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">White</span><span class="s2">, </span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">align</span><span class="s2">(</span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterEnd</span><span class="s2">))</span>
+                                <span class="s2">}</span>
+                            <span class="s2">}</span>
+                        <span class="s2">}</span>
+                    <span class="s2">}</span>
+                    <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">8</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+                <span class="s2">}</span>
+                <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">4</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+                <span class="s1">PageIndicator</span><span class="s2">(</span><span class="s1">currentPageIndex </span><span class="s2">= </span><span class="s3">1</span><span class="s2">, </span><span class="s1">themeColor </span><span class="s2">= </span><span class="s1">themeColor</span><span class="s2">)</span>
+            <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                <span class="s1">Button</span><span class="s2">(</span><span class="s1">onClick </span><span class="s2">= { </span><span class="s1">permissionLauncher</span><span class="s2">.</span><span class="s1">launch</span><span class="s2">(</span><span class="s1">Manifest</span><span class="s2">.</span><span class="s1">permission</span><span class="s2">.</span><span class="s1">RECORD_AUDIO</span><span class="s2">) }) {</span>
+                    <span class="s1">Text</span><span class="s2">(</span><span class="s4">&quot;Grant Microphone Permission&quot;</span><span class="s2">)</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">20</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+        <span class="s2">}</span>
+
+        <span class="s1">IconButton</span><span class="s2">(</span>
+            <span class="s1">onClick </span><span class="s2">= </span><span class="s1">onNextClick</span><span class="s2">,</span>
+            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">align</span><span class="s2">(</span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">TopEnd</span><span class="s2">).</span><span class="s1">padding</span><span class="s2">(</span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">).</span><span class="s1">size</span><span class="s2">(</span><span class="s3">36</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+        <span class="s2">) {</span>
+            <span class="s1">Icon</span><span class="s2">(</span><span class="s1">imageVector </span><span class="s2">= </span><span class="s1">Icons</span><span class="s2">.</span><span class="s1">Filled</span><span class="s2">.</span><span class="s1">Settings</span><span class="s2">, </span><span class="s1">contentDescription </span><span class="s2">= </span><span class="s4">&quot;Settings&quot;</span><span class="s2">, </span><span class="s1">tint </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">DarkGray</span><span class="s2">, </span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">())</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+
+
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">ThirdPageScreen</span><span class="s2">(</span>
+    <span class="s1">selectedThemeColor: Color</span><span class="s2">,</span>
+    <span class="s1">onThemeSelected: </span><span class="s2">(</span><span class="s1">Color</span><span class="s2">) -&gt; </span><span class="s1">Unit</span><span class="s2">,</span>
+    <span class="s1">selectedMode: String</span><span class="s2">,</span>
+    <span class="s1">onModeSelected: </span><span class="s2">(</span><span class="s1">String</span><span class="s2">) -&gt; </span><span class="s1">Unit</span><span class="s2">,</span>
+    <span class="s5">// Add the line below:</span>
+    <span class="s1">manualDbLevels: androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">snapshots</span><span class="s2">.</span><span class="s1">SnapshotStateMap</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Float</span><span class="s2">&gt;,</span>
+    <span class="s1">onNextClick: </span><span class="s2">() -&gt; </span><span class="s1">Unit</span><span class="s2">,</span>
+    <span class="s1">onBackClick: </span><span class="s2">() -&gt; </span><span class="s1">Unit</span>
+<span class="s2">) {</span>
+    <span class="s0">var </span><span class="s1">selectedLanguage by remember </span><span class="s2">{ </span><span class="s1">mutableStateOf</span><span class="s2">(</span><span class="s4">&quot;English&quot;</span><span class="s2">) }</span>
+
+    <span class="s5">// Helper list to keep sliders in correct musical order</span>
+    <span class="s0">val </span><span class="s1">dynamicsOrder </span><span class="s2">= </span><span class="s1">listOf</span><span class="s2">(</span><span class="s4">&quot;fff&quot;</span><span class="s2">, </span><span class="s4">&quot;ff&quot;</span><span class="s2">, </span><span class="s4">&quot;f&quot;</span><span class="s2">, </span><span class="s4">&quot;mf&quot;</span><span class="s2">, </span><span class="s4">&quot;mp&quot;</span><span class="s2">, </span><span class="s4">&quot;p&quot;</span><span class="s2">, </span><span class="s4">&quot;pp&quot;</span><span class="s2">, </span><span class="s4">&quot;ppp&quot;</span><span class="s2">)</span>
+
+    <span class="s1">Box</span><span class="s2">(</span>
+        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">(),</span>
+        <span class="s1">contentAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">Center</span>
+    <span class="s2">) {</span>
+        <span class="s1">Column</span><span class="s2">(</span>
+            <span class="s1">horizontalAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterHorizontally</span><span class="s2">,</span>
+            <span class="s1">verticalArrangement </span><span class="s2">= </span><span class="s1">Arrangement</span><span class="s2">.</span><span class="s1">Top</span><span class="s2">,</span>
+            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                <span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">verticalScroll</span><span class="s2">(</span><span class="s1">rememberScrollState</span><span class="s2">())</span>
+        <span class="s2">) {</span>
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">20</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+            <span class="s5">// --- 1. HEADER ---</span>
+            <span class="s1">Text</span><span class="s2">(</span>
+                <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;DYNAMUSIC&quot;</span><span class="s2">,</span>
+                <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">28</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">,</span>
+                <span class="s1">style </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">TextStyle</span><span class="s2">(</span>
+                    <span class="s1">shadow </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">graphics</span><span class="s2">.</span><span class="s1">Shadow</span><span class="s2">(</span>
+                        <span class="s1">color </span><span class="s2">= </span><span class="s1">selectedThemeColor</span><span class="s2">,</span>
+                        <span class="s1">blurRadius </span><span class="s2">= </span><span class="s3">8f</span>
+                    <span class="s2">)</span>
+                <span class="s2">)</span>
+            <span class="s2">)</span>
+            <span class="s1">Text</span><span class="s2">(</span>
+                <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;Settings&quot;</span><span class="s2">,</span>
+                <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">18</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">ExtraBold</span><span class="s2">,</span>
+                <span class="s1">fontStyle </span><span class="s2">= </span><span class="s1">FontStyle</span><span class="s2">.</span><span class="s1">Italic</span><span class="s2">,</span>
+            <span class="s2">)</span>
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">24</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+            <span class="s5">// --- 2. LANGUAGE SECTION ---</span>
+            <span class="s1">Text</span><span class="s2">(</span><span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;Language:&quot;</span><span class="s2">, </span><span class="s1">fontSize </span><span class="s2">= </span><span class="s3">18</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">, </span><span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">SemiBold</span><span class="s2">)</span>
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">12</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+            <span class="s0">val </span><span class="s1">languages </span><span class="s2">= </span><span class="s1">listOf</span><span class="s2">(</span><span class="s4">&quot;English&quot;</span><span class="s2">, </span><span class="s4">&quot;Spanish&quot;</span><span class="s2">, </span><span class="s4">&quot;French&quot;</span><span class="s2">)</span>
+
+            <span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Row</span><span class="s2">(</span>
+                <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxWidth</span><span class="s2">(),</span>
+                <span class="s1">horizontalArrangement </span><span class="s2">= </span><span class="s1">Arrangement</span><span class="s2">.</span><span class="s1">Center</span>
+            <span class="s2">) {</span>
+                <span class="s1">languages</span><span class="s2">.</span><span class="s1">forEach </span><span class="s2">{ </span><span class="s1">language </span><span class="s2">-&gt;</span>
+                    <span class="s0">val </span><span class="s1">isSelected </span><span class="s2">= (</span><span class="s1">selectedLanguage </span><span class="s2">== </span><span class="s1">language</span><span class="s2">)</span>
+
+                    <span class="s1">OutlinedButton</span><span class="s2">(</span>
+                        <span class="s1">onClick </span><span class="s2">= { </span><span class="s1">selectedLanguage </span><span class="s2">= </span><span class="s1">language </span><span class="s2">},</span>
+                        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                            <span class="s2">.</span><span class="s1">weight</span><span class="s2">(</span><span class="s3">1f</span><span class="s2">)</span>
+                            <span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">50</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+                            <span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s3">4</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">),</span>
+                        <span class="s1">contentPadding </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">PaddingValues</span><span class="s2">(</span><span class="s3">4</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">),</span>
+                        <span class="s1">border </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">isSelected</span><span class="s2">) {</span>
+                            <span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">BorderStroke</span><span class="s2">(</span><span class="s3">3</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">, </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Black</span><span class="s2">)</span>
+                        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                            <span class="s1">ButtonDefaults</span><span class="s2">.</span><span class="s1">outlinedButtonBorder</span>
+                        <span class="s2">},</span>
+                        <span class="s1">colors </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">isSelected</span><span class="s2">) {</span>
+                            <span class="s1">ButtonDefaults</span><span class="s2">.</span><span class="s1">outlinedButtonColors</span><span class="s2">(</span><span class="s1">containerColor </span><span class="s2">= </span><span class="s1">selectedThemeColor</span><span class="s2">)</span>
+                        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                            <span class="s1">ButtonDefaults</span><span class="s2">.</span><span class="s1">outlinedButtonColors</span><span class="s2">(</span><span class="s1">containerColor </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Transparent</span><span class="s2">)</span>
+                        <span class="s2">}</span>
+                    <span class="s2">) {</span>
+                        <span class="s1">Text</span><span class="s2">(</span>
+                            <span class="s1">text </span><span class="s2">= </span><span class="s1">language</span><span class="s2">,</span>
+                            <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">12</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                            <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">,</span>
+                            <span class="s1">color </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">isSelected</span><span class="s2">) </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">White </span><span class="s0">else </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Black</span><span class="s2">,</span>
+                            <span class="s1">maxLines </span><span class="s2">= </span><span class="s3">1</span>
+                        <span class="s2">)</span>
+                    <span class="s2">}</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">24</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+
+            <span class="s5">// --- 3. THEME COLOUR SECTION ---</span>
+            <span class="s1">Text</span><span class="s2">(</span><span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;Theme Colour:&quot;</span><span class="s2">, </span><span class="s1">fontSize </span><span class="s2">= </span><span class="s3">18</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">, </span><span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">SemiBold</span><span class="s2">)</span>
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">12</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+            <span class="s0">val </span><span class="s1">themes </span><span class="s2">= </span><span class="s1">listOf</span><span class="s2">(</span>
+                <span class="s4">&quot;Red&quot; </span><span class="s1">to Color</span><span class="s2">.</span><span class="s1">Red</span><span class="s2">,</span>
+                <span class="s4">&quot;Blue&quot; </span><span class="s1">to Color</span><span class="s2">.</span><span class="s1">Blue</span><span class="s2">,</span>
+                <span class="s4">&quot;Purple&quot; </span><span class="s1">to Color</span><span class="s2">(</span><span class="s3">0xFF6200EE</span><span class="s2">),</span>
+                <span class="s4">&quot;Orange&quot; </span><span class="s1">to Color</span><span class="s2">(</span><span class="s3">0xFFFF5722</span><span class="s2">)</span>
+            <span class="s2">)</span>
+
+            <span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Row</span><span class="s2">(</span>
+                <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxWidth</span><span class="s2">(),</span>
+                <span class="s1">horizontalArrangement </span><span class="s2">= </span><span class="s1">Arrangement</span><span class="s2">.</span><span class="s1">SpaceEvenly</span>
+            <span class="s2">) {</span>
+                <span class="s1">themes</span><span class="s2">.</span><span class="s1">forEach </span><span class="s2">{ (</span><span class="s1">name</span><span class="s2">, </span><span class="s1">color</span><span class="s2">) -&gt;</span>
+                    <span class="s1">Button</span><span class="s2">(</span>
+                        <span class="s1">onClick </span><span class="s2">= { </span><span class="s1">onThemeSelected</span><span class="s2">(</span><span class="s1">color</span><span class="s2">) },</span>
+                        <span class="s1">colors </span><span class="s2">= </span><span class="s1">ButtonDefaults</span><span class="s2">.</span><span class="s1">buttonColors</span><span class="s2">(</span><span class="s1">containerColor </span><span class="s2">= </span><span class="s1">color</span><span class="s2">),</span>
+                        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                            <span class="s2">.</span><span class="s1">weight</span><span class="s2">(</span><span class="s3">1f</span><span class="s2">)</span>
+                            <span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">50</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+                            <span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s3">4</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">),</span>
+                        <span class="s1">contentPadding </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">PaddingValues</span><span class="s2">(</span><span class="s3">0</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">),</span>
+                        <span class="s1">border </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">selectedThemeColor </span><span class="s2">== </span><span class="s1">color</span><span class="s2">) </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">BorderStroke</span><span class="s2">(</span><span class="s3">3</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">, </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Black</span><span class="s2">) </span><span class="s0">else null</span>
+                    <span class="s2">) {</span>
+                        <span class="s1">Text</span><span class="s2">(</span>
+                            <span class="s1">text </span><span class="s2">= </span><span class="s1">name</span><span class="s2">,</span>
+                            <span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">White</span><span class="s2">,</span>
+                            <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">12</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                            <span class="s1">maxLines </span><span class="s2">= </span><span class="s3">1</span>
+                        <span class="s2">)</span>
+                    <span class="s2">}</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">24</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+
+            <span class="s5">// --- 4. MODE SELECTION ---</span>
+            <span class="s0">val </span><span class="s1">modesData </span><span class="s2">= </span><span class="s1">listOf</span><span class="s2">(</span>
+                <span class="s4">&quot;Voice&quot; </span><span class="s1">to </span><span class="s4">&quot;   Best for singers</span><span class="s0">\n   </span><span class="s4">(logarithmic)&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Instruments&quot; </span><span class="s1">to </span><span class="s4">&quot;   For wind, strings etc.</span><span class="s0">\n   </span><span class="s4">(mixed)&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Percussion&quot; </span><span class="s1">to </span><span class="s4">&quot;   Drums &amp; impact</span><span class="s0">\n   </span><span class="s4">(linear)&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Manual&quot; </span><span class="s1">to </span><span class="s4">&quot;   Adjust settings yourself</span><span class="s0">\n   </span><span class="s4">(custom)&quot;</span>
+            <span class="s2">)</span>
+
+            <span class="s1">modesData</span><span class="s2">.</span><span class="s1">forEach </span><span class="s2">{ (</span><span class="s1">modeName</span><span class="s2">, </span><span class="s1">description</span><span class="s2">) -&gt;</span>
+                <span class="s1">Column</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxWidth</span><span class="s2">()) {</span>
+                    <span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Row</span><span class="s2">(</span>
+                        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                            <span class="s2">.</span><span class="s1">fillMaxWidth</span><span class="s2">()</span>
+                            <span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s1">vertical </span><span class="s2">= </span><span class="s3">4</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">),</span>
+                        <span class="s1">verticalAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterVertically</span><span class="s2">,</span>
+                        <span class="s1">horizontalArrangement </span><span class="s2">= </span><span class="s1">Arrangement</span><span class="s2">.</span><span class="s1">Start</span>
+                    <span class="s2">) {</span>
+                        <span class="s1">Button</span><span class="s2">(</span>
+                            <span class="s1">onClick </span><span class="s2">= { </span><span class="s1">onModeSelected</span><span class="s2">(</span><span class="s1">modeName</span><span class="s2">) },</span>
+                            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">width</span><span class="s2">(</span><span class="s3">120</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">),</span>
+                            <span class="s1">colors </span><span class="s2">= </span><span class="s1">ButtonDefaults</span><span class="s2">.</span><span class="s1">buttonColors</span><span class="s2">(</span>
+                                <span class="s1">containerColor </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">selectedMode </span><span class="s2">== </span><span class="s1">modeName</span><span class="s2">) </span><span class="s1">selectedThemeColor </span><span class="s0">else </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">LightGray</span>
+                            <span class="s2">),</span>
+                            <span class="s1">border </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">selectedMode </span><span class="s2">== </span><span class="s1">modeName</span><span class="s2">) </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">BorderStroke</span><span class="s2">(</span>
+                                <span class="s3">3</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">,</span>
+                                <span class="s1">Color</span><span class="s2">.</span><span class="s1">Black</span>
+                            <span class="s2">) </span><span class="s0">else null</span><span class="s2">,</span>
+                            <span class="s1">elevation </span><span class="s2">= </span><span class="s1">ButtonDefaults</span><span class="s2">.</span><span class="s1">buttonElevation</span><span class="s2">(</span>
+                                <span class="s1">defaultElevation </span><span class="s2">= </span><span class="s3">4</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">,</span>
+                                <span class="s1">pressedElevation </span><span class="s2">= </span><span class="s3">8</span><span class="s2">.</span><span class="s1">dp</span>
+                            <span class="s2">)</span>
+                        <span class="s2">) {</span>
+                            <span class="s1">Text</span><span class="s2">(</span>
+                                <span class="s1">text </span><span class="s2">= </span><span class="s1">modeName</span><span class="s2">,</span>
+                                <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">12</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                                <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">,</span>
+                                <span class="s1">color </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">selectedMode </span><span class="s2">== </span><span class="s1">modeName</span><span class="s2">) </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">White </span><span class="s0">else </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Black</span>
+                            <span class="s2">)</span>
+                        <span class="s2">}</span>
+
+                        <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">width</span><span class="s2">(</span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+                        <span class="s1">Text</span><span class="s2">(</span>
+                            <span class="s1">text </span><span class="s2">= </span><span class="s1">description</span><span class="s2">,</span>
+                            <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">14</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                            <span class="s1">fontStyle </span><span class="s2">= </span><span class="s1">FontStyle</span><span class="s2">.</span><span class="s1">Italic</span><span class="s2">,</span>
+                            <span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Gray</span>
+                        <span class="s2">)</span>
+                    <span class="s2">}</span>
+
+                    <span class="s5">// --- EXPANDABLE MANUAL SETTINGS ---</span>
+                    <span class="s0">if </span><span class="s2">(</span><span class="s1">selectedMode </span><span class="s2">== </span><span class="s4">&quot;Manual&quot; </span><span class="s2">&amp;&amp; </span><span class="s1">modeName </span><span class="s2">== </span><span class="s4">&quot;Manual&quot;</span><span class="s2">) {</span>
+                        <span class="s1">Card</span><span class="s2">(</span>
+                            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                                <span class="s2">.</span><span class="s1">fillMaxWidth</span><span class="s2">()</span>
+                                <span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s1">vertical </span><span class="s2">= </span><span class="s3">8</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">),</span>
+                            <span class="s1">colors </span><span class="s2">= </span><span class="s1">CardDefaults</span><span class="s2">.</span><span class="s1">cardColors</span><span class="s2">(</span><span class="s1">containerColor </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">(</span><span class="s3">0xFFF0F0F0</span><span class="s2">)),</span>
+                            <span class="s1">border </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">BorderStroke</span><span class="s2">(</span><span class="s3">1</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">, </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Gray</span><span class="s2">)</span>
+                        <span class="s2">) {</span>
+                            <span class="s1">Column</span><span class="s2">(</span>
+                                <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s3">12</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">),</span>
+                                <span class="s1">horizontalAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterHorizontally</span>
+                            <span class="s2">) {</span>
+
+                                <span class="s1">Text</span><span class="s2">(</span>
+                                    <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;Set Custom dB Levels:&quot;</span><span class="s2">,</span>
+                                    <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">,</span>
+                                    <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">16</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                                    <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s1">bottom </span><span class="s2">= </span><span class="s3">8</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+                                <span class="s2">)</span>
+
+                                <span class="s1">dynamicsOrder</span><span class="s2">.</span><span class="s1">forEach </span><span class="s2">{ </span><span class="s1">dynamic </span><span class="s2">-&gt;</span>
+                                    <span class="s0">val </span><span class="s1">currentValue </span><span class="s2">= </span><span class="s1">manualDbLevels</span><span class="s2">[</span><span class="s1">dynamic</span><span class="s2">] </span><span class="s1">?: </span><span class="s3">0f</span>
+
+                                    <span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Row</span><span class="s2">(</span>
+                                        <span class="s1">verticalAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterVertically</span><span class="s2">,</span>
+                                        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxWidth</span><span class="s2">()</span>
+                                    <span class="s2">) {</span>
+                                        <span class="s1">Text</span><span class="s2">(</span>
+                                            <span class="s1">text </span><span class="s2">= </span><span class="s1">dynamic</span><span class="s2">,</span>
+                                            <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">,</span>
+                                            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">width</span><span class="s2">(</span><span class="s3">35</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+                                        <span class="s2">)</span>
+
+                                        <span class="s1">Slider</span><span class="s2">(</span>
+                                            <span class="s1">value </span><span class="s2">= </span><span class="s1">currentValue</span><span class="s2">,</span>
+                                            <span class="s1">onValueChange </span><span class="s2">= { </span><span class="s1">manualDbLevels</span><span class="s2">[</span><span class="s1">dynamic</span><span class="s2">] = </span><span class="s1">it </span><span class="s2">},</span>
+                                            <span class="s1">valueRange </span><span class="s2">= </span><span class="s3">0f</span><span class="s2">..</span><span class="s3">120f</span><span class="s2">,</span>
+                                            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">weight</span><span class="s2">(</span><span class="s3">1f</span><span class="s2">),</span>
+                                            <span class="s1">colors </span><span class="s2">= </span><span class="s1">SliderDefaults</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">(</span>
+                                                <span class="s1">thumbColor </span><span class="s2">= </span><span class="s1">selectedThemeColor</span><span class="s2">,</span>
+                                                <span class="s1">activeTrackColor </span><span class="s2">= </span><span class="s1">selectedThemeColor</span>
+                                            <span class="s2">)</span>
+                                        <span class="s2">)</span>
+
+                                        <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">width</span><span class="s2">(</span><span class="s3">8</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+                                        <span class="s1">Text</span><span class="s2">(</span>
+                                            <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;</span><span class="s0">${</span><span class="s1">currentValue</span><span class="s2">.</span><span class="s1">toInt</span><span class="s2">()</span><span class="s0">} </span><span class="s4">dB&quot;</span><span class="s2">,</span>
+                                            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">width</span><span class="s2">(</span><span class="s3">50</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+                                        <span class="s2">)</span>
+                                    <span class="s2">}</span>
+                                <span class="s2">}</span>
+
+                                <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+                                <span class="s5">// --- SAVE BUTTON (Visual feedback only for now) ---</span>
+                                <span class="s0">val </span><span class="s1">context </span><span class="s2">= </span><span class="s1">LocalContext</span><span class="s2">.</span><span class="s1">current</span>
+                                <span class="s1">Button</span><span class="s2">(</span>
+                                    <span class="s1">onClick </span><span class="s2">= {</span>
+                                        <span class="s1">android</span><span class="s2">.</span><span class="s1">widget</span><span class="s2">.</span><span class="s1">Toast</span><span class="s2">.</span><span class="s1">makeText</span><span class="s2">(</span><span class="s1">context</span><span class="s2">, </span><span class="s4">&quot;Settings Saved!&quot;</span><span class="s2">, </span><span class="s1">android</span><span class="s2">.</span><span class="s1">widget</span><span class="s2">.</span><span class="s1">Toast</span><span class="s2">.</span><span class="s1">LENGTH_SHORT</span><span class="s2">).</span><span class="s1">show</span><span class="s2">()</span>
+                                    <span class="s2">},</span>
+                                    <span class="s1">colors </span><span class="s2">= </span><span class="s1">ButtonDefaults</span><span class="s2">.</span><span class="s1">buttonColors</span><span class="s2">(</span><span class="s1">containerColor </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Black</span><span class="s2">),</span>
+                                    <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxWidth</span><span class="s2">(</span><span class="s3">0.6f</span><span class="s2">)</span>
+                                <span class="s2">) {</span>
+                                    <span class="s1">Text</span><span class="s2">(</span><span class="s4">&quot;Save Settings&quot;</span><span class="s2">, </span><span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">White</span><span class="s2">)</span>
+                                <span class="s2">}</span>
+                            <span class="s2">}</span>
+                        <span class="s2">}</span>
+                    <span class="s2">}</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">weight</span><span class="s2">(</span><span class="s3">1f</span><span class="s2">))</span>
+
+            <span class="s1">PageIndicator</span><span class="s2">(</span>
+                <span class="s1">currentPageIndex </span><span class="s2">= </span><span class="s3">2</span><span class="s2">,</span>
+                <span class="s1">themeColor </span><span class="s2">= </span><span class="s1">selectedThemeColor</span>
+            <span class="s2">)</span>
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">20</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">FourthPageScreen</span><span class="s2">(</span>
+    <span class="s1">selectedThemeColor: Color</span><span class="s2">,</span>
+    <span class="s5">// --- ADDED THIS PARAMETER ---</span>
+    <span class="s1">manualDbLevels: androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">runtime</span><span class="s2">.</span><span class="s1">snapshots</span><span class="s2">.</span><span class="s1">SnapshotStateMap</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Float</span><span class="s2">&gt;,</span>
+    <span class="s1">onBackClick: </span><span class="s2">() -&gt; </span><span class="s1">Unit</span>
+<span class="s2">) {</span>
+    <span class="s1">Box</span><span class="s2">(</span>
+        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">(),</span>
+        <span class="s1">contentAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">Center</span>
+    <span class="s2">) {</span>
+        <span class="s1">Column</span><span class="s2">(</span>
+            <span class="s1">horizontalAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterHorizontally</span><span class="s2">,</span>
+            <span class="s1">verticalArrangement </span><span class="s2">= </span><span class="s1">Arrangement</span><span class="s2">.</span><span class="s1">Top</span><span class="s2">,</span>
+            <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                <span class="s2">.</span><span class="s1">fillMaxSize</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">verticalScroll</span><span class="s2">(</span><span class="s1">rememberScrollState</span><span class="s2">())</span>
+        <span class="s2">) {</span>
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">20</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+            <span class="s5">// --- HEADER WITH DYNAMIC SHADOW ---</span>
+            <span class="s1">Text</span><span class="s2">(</span>
+                <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;DYNAMUSIC&quot;</span><span class="s2">,</span>
+                <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">28</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">Bold</span><span class="s2">,</span>
+                <span class="s1">style </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">TextStyle</span><span class="s2">(</span>
+                    <span class="s1">shadow </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">.</span><span class="s1">graphics</span><span class="s2">.</span><span class="s1">Shadow</span><span class="s2">(</span>
+                        <span class="s1">color </span><span class="s2">= </span><span class="s1">selectedThemeColor</span><span class="s2">,</span>
+                        <span class="s1">blurRadius </span><span class="s2">= </span><span class="s3">10f</span>
+                    <span class="s2">)</span>
+                <span class="s2">)</span>
+            <span class="s2">)</span>
+
+            <span class="s1">Text</span><span class="s2">(</span>
+                <span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;Information&quot;</span><span class="s2">,</span>
+                <span class="s1">fontSize </span><span class="s2">= </span><span class="s3">18</span><span class="s2">.</span><span class="s1">sp</span><span class="s2">,</span>
+                <span class="s1">fontWeight </span><span class="s2">= </span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">ExtraBold</span><span class="s2">,</span>
+                <span class="s1">fontStyle </span><span class="s2">= </span><span class="s1">FontStyle</span><span class="s2">.</span><span class="s1">Italic</span><span class="s2">,</span>
+            <span class="s2">)</span>
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">20</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+
+            <span class="s1">Text</span><span class="s2">(</span><span class="s1">text </span><span class="s2">= </span><span class="s4">&quot;Page 4 content goes here...&quot;</span><span class="s2">, </span><span class="s1">color </span><span class="s2">= </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Gray</span><span class="s2">)</span>
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">weight</span><span class="s2">(</span><span class="s3">1f</span><span class="s2">))</span>
+
+            <span class="s1">PageIndicator</span><span class="s2">(</span>
+                <span class="s1">currentPageIndex </span><span class="s2">= </span><span class="s3">3</span><span class="s2">,</span>
+                <span class="s1">themeColor </span><span class="s2">= </span><span class="s1">selectedThemeColor</span>
+            <span class="s2">)</span>
+
+            <span class="s1">Spacer</span><span class="s2">(</span><span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">height</span><span class="s2">(</span><span class="s3">20</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">))</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s5">// --- HELPER CLASSES ---</span>
+
+<span class="s0">class </span><span class="s1">AudioRecorder </span><span class="s2">{</span>
+    <span class="s1">private </span><span class="s0">var </span><span class="s1">recorder: MediaRecorder? </span><span class="s2">= </span><span class="s0">null</span>
+
+    <span class="s0">fun </span><span class="s1">start</span><span class="s2">() {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">recorder </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">recorder </span><span class="s2">= </span><span class="s1">MediaRecorder</span><span class="s2">().</span><span class="s1">apply </span><span class="s2">{</span>
+                <span class="s1">setAudioSource</span><span class="s2">(</span><span class="s1">MediaRecorder</span><span class="s2">.</span><span class="s1">AudioSource</span><span class="s2">.</span><span class="s1">MIC</span><span class="s2">)</span>
+                <span class="s1">setOutputFormat</span><span class="s2">(</span><span class="s1">MediaRecorder</span><span class="s2">.</span><span class="s1">OutputFormat</span><span class="s2">.</span><span class="s1">THREE_GPP</span><span class="s2">)</span>
+                <span class="s1">setAudioEncoder</span><span class="s2">(</span><span class="s1">MediaRecorder</span><span class="s2">.</span><span class="s1">AudioEncoder</span><span class="s2">.</span><span class="s1">AMR_NB</span><span class="s2">)</span>
+                <span class="s1">setOutputFile</span><span class="s2">(</span><span class="s4">&quot;/dev/null&quot;</span><span class="s2">)</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">prepare</span><span class="s2">()</span>
+                    <span class="s1">start</span><span class="s2">()</span>
+                <span class="s2">} </span><span class="s1">catch </span><span class="s2">(</span><span class="s1">e: Exception</span><span class="s2">) {</span>
+                    <span class="s1">e</span><span class="s2">.</span><span class="s1">printStackTrace</span><span class="s2">()</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">fun </span><span class="s1">stop</span><span class="s2">() {</span>
+        <span class="s1">recorder?</span><span class="s2">.</span><span class="s1">apply </span><span class="s2">{</span>
+            <span class="s0">try </span><span class="s2">{</span>
+                <span class="s1">stop</span><span class="s2">()</span>
+                <span class="s1">release</span><span class="s2">()</span>
+            <span class="s2">} </span><span class="s1">catch </span><span class="s2">(</span><span class="s1">e: Exception</span><span class="s2">) {</span>
+                <span class="s1">e</span><span class="s2">.</span><span class="s1">printStackTrace</span><span class="s2">()</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s1">recorder </span><span class="s2">= </span><span class="s0">null</span>
+    <span class="s2">}</span>
+
+    <span class="s0">fun </span><span class="s1">getMaxAmplitude</span><span class="s2">()</span><span class="s1">: Int </span><span class="s2">{</span>
+        <span class="s0">return try </span><span class="s2">{</span>
+            <span class="s1">recorder?</span><span class="s2">.</span><span class="s1">maxAmplitude ?: </span><span class="s3">0</span>
+        <span class="s2">} </span><span class="s1">catch </span><span class="s2">(</span><span class="s1">e: Exception</span><span class="s2">) {</span>
+            <span class="s3">0</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s1">data </span><span class="s0">class </span><span class="s1">SymbolData</span><span class="s2">(</span>
+    <span class="s0">val </span><span class="s1">text: String</span><span class="s2">,</span>
+    <span class="s0">val </span><span class="s1">xOffset: Int</span><span class="s2">,</span>
+    <span class="s0">val </span><span class="s1">yOffset: Int</span><span class="s2">,</span>
+    <span class="s0">val </span><span class="s1">rotation: Float</span><span class="s2">,</span>
+    <span class="s0">val </span><span class="s1">size: Int</span><span class="s2">,</span>
+    <span class="s0">val </span><span class="s1">color: Color</span>
+<span class="s2">)</span>
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">PageIndicator</span><span class="s2">(</span>
+    <span class="s1">pageCount: Int </span><span class="s2">= </span><span class="s3">4</span><span class="s2">,</span>
+    <span class="s1">currentPageIndex: Int</span><span class="s2">, </span><span class="s5">// 0 for Page 1, 1 for Page 2, etc.</span>
+    <span class="s1">themeColor: Color</span>
+<span class="s2">) {</span>
+    <span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Row</span><span class="s2">(</span>
+        <span class="s1">horizontalArrangement </span><span class="s2">= </span><span class="s1">Arrangement</span><span class="s2">.</span><span class="s1">Center</span><span class="s2">,</span>
+        <span class="s1">verticalAlignment </span><span class="s2">= </span><span class="s1">Alignment</span><span class="s2">.</span><span class="s1">CenterVertically</span><span class="s2">,</span>
+        <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span><span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s1">vertical </span><span class="s2">= </span><span class="s3">16</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">) </span><span class="s5">// Add some breathing room</span>
+    <span class="s2">) {</span>
+        <span class="s1">repeat</span><span class="s2">(</span><span class="s1">pageCount</span><span class="s2">) { </span><span class="s1">index </span><span class="s2">-&gt;</span>
+            <span class="s0">val </span><span class="s1">isSelected </span><span class="s2">= </span><span class="s1">index </span><span class="s2">== </span><span class="s1">currentPageIndex</span>
+
+            <span class="s5">// Draw the circle</span>
+            <span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">layout</span><span class="s2">.</span><span class="s1">Box</span><span class="s2">(</span>
+                <span class="s1">modifier </span><span class="s2">= </span><span class="s1">Modifier</span>
+                    <span class="s2">.</span><span class="s1">padding</span><span class="s2">(</span><span class="s3">4</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">) </span><span class="s5">// Space between circles</span>
+                    <span class="s2">.</span><span class="s1">size</span><span class="s2">(</span><span class="s3">12</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">)   </span><span class="s5">// Size of the circle</span>
+                    <span class="s2">.</span><span class="s1">background</span><span class="s2">(</span>
+                        <span class="s1">color </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">isSelected</span><span class="s2">) </span><span class="s1">themeColor </span><span class="s0">else </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Transparent</span><span class="s2">,</span>
+                        <span class="s1">shape </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">shape</span><span class="s2">.</span><span class="s1">CircleShape</span>
+                    <span class="s2">)</span>
+                    <span class="s2">.</span><span class="s1">border</span><span class="s2">(</span>
+                        <span class="s1">width </span><span class="s2">= </span><span class="s3">1</span><span class="s2">.</span><span class="s1">dp</span><span class="s2">,</span>
+                        <span class="s1">color </span><span class="s2">= </span><span class="s0">if </span><span class="s2">(</span><span class="s1">isSelected</span><span class="s2">) </span><span class="s1">themeColor </span><span class="s0">else </span><span class="s1">Color</span><span class="s2">.</span><span class="s1">Gray</span><span class="s2">,</span>
+                        <span class="s1">shape </span><span class="s2">= </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">compose</span><span class="s2">.</span><span class="s1">foundation</span><span class="s2">.</span><span class="s1">shape</span><span class="s2">.</span><span class="s1">CircleShape</span>
+                    <span class="s2">)</span>
+            <span class="s2">)</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
