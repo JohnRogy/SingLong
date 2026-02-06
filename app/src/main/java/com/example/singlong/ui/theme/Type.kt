@@ -1,4 +1,4 @@
-package com.example.dynamusic.ui.theme
+package com.example.singlong.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

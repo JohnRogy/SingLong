@@ -1,4 +1,4 @@
-package com.example.dynamusic
+package com.example.singlong
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

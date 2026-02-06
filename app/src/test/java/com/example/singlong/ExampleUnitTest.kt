@@ -1,4 +1,4 @@
-package com.example.dynamusic
+package com.example.singlong
 
 import org.junit.Test
 

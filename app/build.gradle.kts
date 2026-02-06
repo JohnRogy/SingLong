@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.dynamusic"
+    namespace = "com.example.singlong"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.dynamusic"
+        applicationId = "com.example.singlong"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

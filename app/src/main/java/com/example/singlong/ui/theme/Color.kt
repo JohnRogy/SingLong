@@ -1,4 +1,4 @@
-package com.example.dynamusic.ui.theme
+package com.example.singlong.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

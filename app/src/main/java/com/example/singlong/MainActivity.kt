@@ -1,4 +1,4 @@
-package com.example.dynamusic
+package com.example.singlong
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -80,7 +80,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
-import com.example.dynamusic.ui.theme.DynamusicTheme
+import com.example.singlong.ui.theme.DynamusicTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
