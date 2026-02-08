@@ -1,17 +1,16 @@
-# SingLong
+SingLong
 
-A free, ad-free, open-source Android app for beginner singers
-focused on breath control.
+SingLong is free, ad-free, and open-source software focused on breath control.
 
-## Features
+ Features
 - Designed for beginners
 - Multilingual: English, Spanish, French
 - Offline processing
 - No ads, no tracking
 
-## License
+License
 MIT License
 
-## Support
+Support
 If you find this app useful, you can support development via Liberapay:
 https://liberapay.com/JohnRogy
