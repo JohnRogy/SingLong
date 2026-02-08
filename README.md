@@ -1,6 +1,6 @@
 SingLong
 
-SingLong is free, ad-free, and open-source software focused on breath control.
+SingLong is free, ad-free, and open-source software for singers, focused on breath control.
 
  Features
 - Designed for beginners
