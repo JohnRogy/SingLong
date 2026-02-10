@@ -282,7 +282,7 @@ fun FirstPageScreen(
                         border = if (isSelected) {
                             BorderStroke(2.dp, Color.Black)
                         } else {
-                            ButtonDefaults.outlinedButtonBorder
+                            BorderStroke(1.dp, Color.Gray)
                         },
                         colors = if (isSelected) {
                             ButtonDefaults.outlinedButtonColors(containerColor = themeColor)
@@ -417,7 +417,7 @@ fun SecondPageScreen(
             ) {
                 OutlinedButton(
                     onClick = onAboutClick,
-                    border = ButtonDefaults.outlinedButtonBorder,
+                    border = BorderStroke(1.dp, Color.Gray),
                     colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent, contentColor = Color.Black)
                 ) {
                     Text(
@@ -441,6 +441,7 @@ fun FourthPageScreen(
     onSettingsClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val microphonePermissionRequired = stringResource(id = R.string.microphone_permission_required)
 
     // --- Audio & Timer State ---
     var hasPermission by remember {
@@ -480,7 +481,7 @@ fun FourthPageScreen(
         onResult = { isGranted ->
             hasPermission = isGranted
             if (!isGranted) {
-                Toast.makeText(context, context.getString(R.string.microphone_permission_required), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, microphonePermissionRequired, Toast.LENGTH_SHORT).show()
             }
         }
     )
@@ -1011,7 +1012,7 @@ fun AboutScreen(
                             }
                         },
                         modifier = Modifier.size(width = 120.dp, height = 34.dp),
-                        border = ButtonDefaults.outlinedButtonBorder,
+                        border = BorderStroke(1.dp, Color.Gray),
                         colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent, contentColor = Color.Black)
                     ) {
                         Text(stringResource(id = R.string.support_button))
@@ -1038,7 +1039,7 @@ fun AboutScreen(
                             }
                         },
                         modifier = Modifier.size(width = 120.dp, height = 34.dp),
-                        border = ButtonDefaults.outlinedButtonBorder,
+                        border = BorderStroke(1.dp, Color.Gray),
                         colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent, contentColor = Color.Black)
                     ) {
                         Text(stringResource(id = R.string.view_button))
