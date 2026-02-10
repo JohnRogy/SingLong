@@ -348,7 +348,7 @@ fun SecondPageScreen(
                 fontStyle = FontStyle.Italic
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
 
             Text(
@@ -361,7 +361,7 @@ fun SecondPageScreen(
                 lineHeight = 30.sp
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // --- 4. BREATH CONTROL SECTION ---
 
@@ -390,26 +390,26 @@ fun SecondPageScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.breath_control_title),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                Spacer(modifier = Modifier.width(20.dp))
+                Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = stringResource(R.string.breath_control_description),
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontStyle = FontStyle.Italic,
-                    color = Color.Gray
+                    color = Color.DarkGray
                 )
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.notes_content),
-                fontSize = 14.sp,
+                fontSize = 12.sp,
                 fontStyle = FontStyle.Italic,
                 color = Color.DarkGray
             )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -420,8 +420,13 @@ fun SecondPageScreen(
                     border = ButtonDefaults.outlinedButtonBorder,
                     colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent, contentColor = Color.Black)
                 ) {
-                    Text(stringResource(R.string.about_singlong))
+                    Text(
+                        text= stringResource(R.string.about_singlong),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                    )
                 }
+
             }
 
             PageIndicator(pageCount = 4, currentPageIndex = 1, themeColor = selectedThemeColor)
@@ -629,7 +634,7 @@ fun FourthPageScreen(
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.Red.copy(alpha = promptPulseAlpha),
                         textAlign = TextAlign.Center,
-                        lineHeight = 20.sp
+                        lineHeight = 18.sp       //-------------------------------
                     )
                 }
             }
@@ -665,7 +670,7 @@ fun FourthPageScreen(
                             color = Color.Gray
                         )
                         // --- SPACER FOR ALIGNMENT ---
-                        Spacer(modifier = Modifier.height(78.dp))
+                        Spacer(modifier = Modifier.height(78.dp)) //----------
                     }
 
                     // --- GAUGE WITH LABELS (Aligned to Center) ---
@@ -793,7 +798,7 @@ fun FourthPageScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 // --- NEW SENSITIVITY SLIDER ---
                 Column(
