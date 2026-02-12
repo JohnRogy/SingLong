@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -90,6 +91,7 @@ import java.io.File
 import kotlin.math.log10
 import kotlin.math.roundToInt
 import androidx.compose.foundation.layout.PaddingValues
+import com.example.singlong.BuildConfig
 
 @Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
@@ -154,6 +156,7 @@ fun PagerScreen(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page: Int ->
             when (page) {
+                // ------------------THIS IS PAGE 1 ---------------------
                 0 -> FirstPageScreen(
                     themeColor = currentThemeColor,
                     selectedLanguage = selectedLanguage,
@@ -174,6 +177,7 @@ fun PagerScreen(modifier: Modifier = Modifier) {
                         smoothNavigateTo(1)
                     }
                 )
+                //-------------------THIS IS PAGE 2 ---------------------------
                 1 -> SecondPageScreen(
                     selectedThemeColor = currentThemeColor,
                     selectedMode = selectedMode,
@@ -181,10 +185,12 @@ fun PagerScreen(modifier: Modifier = Modifier) {
                     onBreathControlClick = { smoothNavigateTo(2) },
                     onAboutClick = { smoothNavigateTo(3) }
                 )
+                //---------------------THIS IS PAGE 3 --------------------------
                 2 -> FourthPageScreen(
                     selectedThemeColor = currentThemeColor,
                     onSettingsClick = { smoothNavigateTo(1) }
                 )
+                //--------------------THIS IS PAGE 4 ----------------------------
                 3 -> AboutScreen(
                     selectedThemeColor = currentThemeColor,
                     onSettingsClick = { smoothNavigateTo(1) }
@@ -378,9 +384,7 @@ fun SecondPageScreen(
                         onBreathControlClick()
                     },
                     modifier = Modifier
-                        .width(150.dp)
-                        .height(55.dp),
-
+                        .width(150.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedMode == "Breath Control") selectedThemeColor else Color.White,
                         contentColor = if (selectedMode == "Breath Control") Color.White else Color.Black
@@ -391,7 +395,8 @@ fun SecondPageScreen(
                     Text(
                         text = stringResource(R.string.breath_control_title),
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
@@ -435,7 +440,7 @@ fun SecondPageScreen(
 }
 
 @SuppressLint("DefaultLocale")
-@Composable
+@Composable  //-------------------THIS IS PAGE 3------------------
 fun FourthPageScreen(
     selectedThemeColor: Color,
     onSettingsClick: () -> Unit
@@ -623,8 +628,7 @@ fun FourthPageScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(85.dp) // Reserves space for text and padding
-                    .padding(vertical = 10.dp),
+                    .defaultMinSize(minHeight = 100.dp), // Reserves space for text and padding
                 contentAlignment = Alignment.Center
             ) {
                 if (averageAmbientDb > 0 && timerSeconds == 0 && !isTimerDeactivated && !isCalibrating) {
@@ -635,7 +639,7 @@ fun FourthPageScreen(
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.Red.copy(alpha = promptPulseAlpha),
                         textAlign = TextAlign.Center,
-                        lineHeight = 18.sp       //-------------------------------
+                        lineHeight = 24.sp
                     )
                 }
             }
@@ -666,7 +670,7 @@ fun FourthPageScreen(
                         )
                         Text(
                             text = stringResource(R.string.decibels),
-                            fontSize = 14.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color.Gray
                         )
@@ -679,7 +683,7 @@ fun FourthPageScreen(
                         modifier = Modifier.align(Alignment.Center),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val labelWidth = 40.dp
+                        val labelWidth = 50.dp
                         // --- Labels on the left ---
                         Box(
                             modifier = Modifier
@@ -688,7 +692,7 @@ fun FourthPageScreen(
                                 .padding(end = 4.dp), // Create space between labels and gauge
                             contentAlignment = Alignment.BottomEnd
                         ) {
-                            val markerLevels = listOf(20, 40, 60, 80, 100)
+                            val markerLevels = listOf(20,40,60,80,100)
                             markerLevels.forEach { level ->
                                 val positionFraction = ((level - minVisibleDb) / visibleDbRange).coerceIn(0.0, 1.0)
                                 Text(
@@ -697,7 +701,7 @@ fun FourthPageScreen(
                                     color = Color.Black,
                                     modifier = Modifier
                                         .offset(
-                                            y = -(gaugeHeight * positionFraction.toFloat()) + 5.dp
+                                            y = -(gaugeHeight * positionFraction.toFloat()) + 6.dp
                                         )
                                 )
                             }
@@ -756,7 +760,7 @@ fun FourthPageScreen(
                     Column(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
-                            .width(100.dp),
+                            .width(120.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -768,7 +772,7 @@ fun FourthPageScreen(
                         )
                         Text(
                             text = stringResource(R.string.seconds),
-                            fontSize = 14.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color.Gray
                         )
@@ -782,7 +786,7 @@ fun FourthPageScreen(
                             },
                             contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
                             shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.size(width = 100.dp, height = 50.dp),
+                            modifier = Modifier.size(width = 110.dp, height = 50.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Red.copy(alpha = resetButtonAlpha)
                             ),
@@ -791,7 +795,7 @@ fun FourthPageScreen(
                             Text(
                                 stringResource(R.string.reset_timer_button),
                                 color = Color.White,
-                                fontSize = 14.sp,
+                                fontSize = 12.sp,
                                 textAlign = TextAlign.Center,
                                 lineHeight = 16.sp
                             )
@@ -799,7 +803,7 @@ fun FourthPageScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // --- NEW SENSITIVITY SLIDER ---
                 Column(
@@ -808,7 +812,7 @@ fun FourthPageScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.variability_of_your_note),
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic
                     )
@@ -832,7 +836,7 @@ fun FourthPageScreen(
                         Text(stringResource(R.string.slider_narrow), fontStyle = FontStyle.Italic, fontWeight = FontWeight.SemiBold)
                     }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // --- MODIFIED CALIBRATION BUTTON ---
                 val calibrationButtonText = when {
@@ -903,9 +907,9 @@ fun FourthPageScreen(
 
                         Text(
                             text = calibrationButtonText,
-                            fontSize = 15.sp,
-                            fontStyle = FontStyle.Italic,
-                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            //fontStyle = FontStyle.Italic,
+                            //fontWeight = FontWeight.Bold,
                             color = Color.White,
                             textAlign = TextAlign.Center
                         )
@@ -916,7 +920,7 @@ fun FourthPageScreen(
                     Text(stringResource(R.string.grant_permission))
                 }
             }
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(6.dp))
             PageIndicator(pageCount = 4, currentPageIndex = 2, themeColor = selectedThemeColor)
         }
 
@@ -948,7 +952,7 @@ fun SettingsButton(
     }
 }
 
-@Composable
+@Composable  // ----------------------THIS IS APP PAGE 4 ---------------------------
 fun AboutScreen(
     selectedThemeColor: Color,
     onSettingsClick: () -> Unit
@@ -956,6 +960,8 @@ fun AboutScreen(
     val context = LocalContext.current
     val githubUrl = "https://github.com/JohnRogy"
     val liberapayUrl = "https://liberapay.com/JohnRogy/donate"
+
+
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -985,9 +991,20 @@ fun AboutScreen(
                 fontStyle = FontStyle.Italic
             )
             Spacer(modifier = Modifier.height(20.dp))
+
+            val versionName = BuildConfig.VERSION_NAME
             Text(
-                text = stringResource(id = R.string.about_placeholder),
-                fontSize = 14.sp,
+                text = stringResource(R.string.app_version_label, versionName),
+                fontSize = 12.sp,
+                fontStyle = FontStyle.Italic,
+                color = Color.Black
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.about_text),
+                fontSize = 12.sp,
                 fontStyle = FontStyle.Italic,
                 color = Color.DarkGray
             )
@@ -1015,12 +1032,12 @@ fun AboutScreen(
                         border = BorderStroke(1.dp, Color.Gray),
                         colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent, contentColor = Color.Black)
                     ) {
-                        Text(stringResource(id = R.string.support_button))
+                        Text(stringResource(id = R.string.support_button), fontSize = 10.sp)
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = stringResource(id = R.string.support_placeholder),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontStyle = FontStyle.Italic,
                         color = Color.DarkGray
                     )
@@ -1042,12 +1059,12 @@ fun AboutScreen(
                         border = BorderStroke(1.dp, Color.Gray),
                         colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent, contentColor = Color.Black)
                     ) {
-                        Text(stringResource(id = R.string.view_button))
+                        Text(stringResource(id = R.string.view_button), fontSize = 10.sp)
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = stringResource(id = R.string.view_placeholder),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontStyle = FontStyle.Italic,
                         color = Color.DarkGray
                     )
@@ -1156,3 +1173,4 @@ fun PageIndicator(
         }
     }
 }
+//-----------------------------THIS IS THE END BFTE -----------------------------

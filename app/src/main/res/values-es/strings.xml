@@ -25,7 +25,7 @@
 - El control deslizante "Rango de decibelios" te permite elegir un rango amplio o estrecho de decibelios para mantener presionada una nota.</string>
 
     <!-- Page 4: Breath Control -->
-    <string name="calibrating_text">CALIBRANDO…Por favor, mantente en silencio.</string>
+    <string name="calibrating_text">CALIBRANDO…\nPor favor, mantente en silencio.</string>
     <string name="breath_control_title">Controle de la Respiración</string>
     <string name="decibels">decibelios</string>
     <string name="seconds">segundos</string>
@@ -43,12 +43,12 @@
     <!-- About Page -->
     <string name="about_title">SingLong</string>
     <string name="about_subtitle">Acerca de</string>
-    <string name="about_placeholder"> - Versión de la aplicación: 1.0\n\n
-        - Licenciada bajo la Licencia MIT\n
-        - Esta aplicación es gratuita, sin publicidad y de código abierto, creada para ayudar a cantantes y músicos principiantes a aprender y practicar el control de la respiración.
+    <string name="app_version_label">  App version: %1$s\n</string>
+    <string name="about_text">- Licencia MIT\n- Esta aplicación es gratuita, sin publicidad y de código abierto, creada para ayudar a cantantes principiantes a aprender y practicar el control de la respiración.
 
 Si te resulta útil y quieres apoyar su desarrollo continuo, puedes hacer una contribución voluntaria. Las contribuciones son opcionales, se agradecen y ayudan a mantener la aplicación gratuita para todos.\n
-        - Desarrollada y mantenida por JohnRogy.\n
+
+- Desarrollada y mantenida por JohnRogy.\n
     </string>
 
     <string name="support_button">Soporte</string>

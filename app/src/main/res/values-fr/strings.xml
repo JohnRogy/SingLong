@@ -21,12 +21,10 @@
     <string name="breath_control_description">Entraînez-vous à tenir une note.</string>
     <string name="information_button">Information</string>
     <string name="about_singlong">À propos SingLong</string>
-    <string name="notes_content">Remarques:\n- SingLong vous indiquera combien de secondes vous pouvez tenir une note.\n
-
-- Le curseur «Plage de décibels» vous permet de choisir une plage de décibels plus ou moins large pour la durée de la note.</string>
+    <string name="notes_content">Remarques:\n- SingLong vous indiquera combien de secondes vous pouvez tenir une note.\n- Le curseur «Plage de décibels» vous permet de choisir une plage de décibels plus ou moins large pour la durée de la note.</string>
 
     <!-- Page 4: Breath Control -->
-    <string name="calibrating_text">CALIBRAGE…Veuillez rester silencieux.</string>
+    <string name="calibrating_text">CALIBRAGE…\nVeuillez rester silencieux.</string>
     <string name="breath_control_title">Controle de la Respiration</string>
     <string name="decibels">décibels</string>
     <string name="seconds">secondes</string>
@@ -44,13 +42,12 @@
     <!-- About Page -->
     <string name="about_title">SingLong</string>
     <string name="about_subtitle">À propos</string>
-    <string name="about_placeholder"> - Version de l\'application: 1.0\n\n
-        - Licenciée sous la licence MIT\n
-
-        - Cette application est gratuite, sans publicité et open source. Elle a été conçue pour aider les chanteurs et musiciens débutants à apprendre et à pratiquer le contrôle de la respiration.
+    <string name="app_version_label">  App version: %1$s\n</string>
+    <string name="about_text"> - Sous licence MIT\n- Cette application est un logiciel libre, sans publicité et open source, conçu pour aider les chanteurs débutants à apprendre et à pratiquer le contrôle de la respiration.
 
 Si vous la trouvez utile et souhaitez soutenir son développement, vous pouvez faire un don. Les contributions sont facultatives, appréciées et permettent de maintenir l\'application gratuite pour tous.\n
-        - Développée et maintenue par JohnRogy.\n
+
+- Développé et maintenu par JohnRogy.\n
     </string>
 
     <string name="support_button">Soutenir</string>

@@ -27,11 +27,11 @@
 
     <!-- Page 4: Breath Control -->
     <string name="breath_control_title">Breath Control</string>
-    <string name="calibrating_text">CALIBRATING…Please stay silent.</string>
+    <string name="calibrating_text">CALIBRATING…\nPlease stay silent.</string>
     <string name="decibels">decibels</string>
     <string name="seconds">seconds</string>
     <string name="reset_timer">Reset Timer</string>
-    <string name="breath_control_calibrate_start">Touch to calibrate an average ambient level</string>
+    <string name="breath_control_calibrate_start">  Touch to calibrate an \naverage ambient level</string>
     <string name="breath_control_calibrate_result">Average ambient Level: %1$d dB\nTOUCH TO RE-CALIBRATE</string>
     <string name="microphone_permission_required">Microphone permission is required for this feature.</string>
     <string name="slider_medium">4dB</string>
@@ -44,9 +44,8 @@
     <!-- About Page -->
     <string name="about_title">SingLong</string>
     <string name="about_subtitle">About</string>
-    <string name="about_placeholder"> - App version: 1.0\n\n
-- Licensed under the MIT License\n
-- This app is free, ad-free, and open-source software, created to help beginner singers and musicians learn and practice breath control.
+    <string name="app_version_label">  App version: %1$s\n</string>
+    <string name="about_text"> - Licensed under the MIT License\n- This app is free, ad-free, and open-source software, created to help beginner singers learn and practice breath control.
 
 If you find it useful and would like to support ongoing development, you can make a voluntary contribution. Contributions are optional, appreciated, and help keep the app free for everyone.\n
 
