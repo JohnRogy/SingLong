@@ -92,6 +92,7 @@ import kotlin.math.log10
 import kotlin.math.roundToInt
 import androidx.compose.foundation.layout.PaddingValues
 import com.example.singlong.BuildConfig
+//import com.johnrogy.singlong.BuildConfig
 
 @Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
@@ -186,12 +187,12 @@ fun PagerScreen(modifier: Modifier = Modifier) {
                     onAboutClick = { smoothNavigateTo(3) }
                 )
                 //---------------------THIS IS PAGE 3 --------------------------
-                2 -> FourthPageScreen(
+                2 -> ThirdPageScreen(
                     selectedThemeColor = currentThemeColor,
                     onSettingsClick = { smoothNavigateTo(1) }
                 )
                 //--------------------THIS IS PAGE 4 ----------------------------
-                3 -> AboutScreen(
+                3 -> FourthPageScreen(
                     selectedThemeColor = currentThemeColor,
                     onSettingsClick = { smoothNavigateTo(1) }
                 )
@@ -441,7 +442,7 @@ fun SecondPageScreen(
 
 @SuppressLint("DefaultLocale")
 @Composable  //-------------------THIS IS PAGE 3------------------
-fun FourthPageScreen(
+fun ThirdPageScreen(
     selectedThemeColor: Color,
     onSettingsClick: () -> Unit
 ) {
@@ -638,6 +639,16 @@ fun FourthPageScreen(
                         fontFamily = FontFamily.Cursive,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.Red.copy(alpha = promptPulseAlpha),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp
+                    )
+                } else if (isTimerDeactivated) {
+                    Text(
+                        text = stringResource(id = R.string.note_held_for, timerSeconds),
+                        fontSize = 22.sp,
+                        fontFamily = FontFamily.Cursive,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.Black,
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
                     )
@@ -953,7 +964,7 @@ fun SettingsButton(
 }
 
 @Composable  // ----------------------THIS IS APP PAGE 4 ---------------------------
-fun AboutScreen(
+fun FourthPageScreen(
     selectedThemeColor: Color,
     onSettingsClick: () -> Unit
 ) {

@@ -21,8 +21,10 @@
     <string name="breath_control_description">Practica sostener una nota.</string>
     <string name="information_button">Información</string>
     <string name="about_singlong">Acerca de SingLong</string>
-    <string name="notes_content">Notas:\n- SingLong te mostrará cuántos segundos puedes mantener presionada una nota.\n
-- El control deslizante "Rango de decibelios" te permite elegir un rango amplio o estrecho de decibelios para mantener presionada una nota.</string>
+    <string name="notes_content">Notas:\n-
+    SingLong te mostrará cuántos segundos puedes mantener una nota.\n-
+    El control deslizante "Rango de decibelios" te permite elegir un rango amplio o estrecho de decibelios para mantener una nota.\n-
+    Recalibra si cambia el nivel de ruido de fondo.</string>
 
     <!-- Page 4: Breath Control -->
     <string name="calibrating_text">CALIBRANDO…\nPor favor, mantente en silencio.</string>
@@ -39,6 +41,7 @@
     <string name="sing_or_hum_prompt">🎶Canta o tararea una nota…\n Intenta mantener el mismo \n nivel de decibelios.🎶</string>
     <string name="reset_timer_button">Reiniciar\nTemporizador</string>
     <string name="variability_of_your_note">Rango de decibeles de tu nota</string>
+    <string name="note_held_for">🎶Mantuviste esa nota\n durante %1$d segundos🎶</string>
 
     <!-- About Page -->
     <string name="about_title">SingLong</string>

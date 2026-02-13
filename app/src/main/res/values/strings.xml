@@ -21,8 +21,10 @@
     <string name="information_button">Information</string>
     <string name="about_singlong">About SingLong</string>
 
-    <string name="notes_content">Notes:\n- SingLong will show you how many seconds you can hold a note.\n
-- The "Decibel Range" slider lets you choose a wide or narrow range of decibels for holding a note.
+    <string name="notes_content">Notes:\n-
+        SingLong will show you how many seconds you can hold a note.\n-
+        The "Decibel Range" slider lets you choose a wide or narrow range of decibels for holding a note.\n-
+        Recalibrate if the background noise level changes.
     </string>
 
     <!-- Page 4: Breath Control -->
@@ -40,6 +42,7 @@
     <string name="sing_or_hum_prompt">🎶Sing or hum a note…\n Try to keep the same decibel level.🎶</string>
     <string name="reset_timer_button">Reset\nTimer</string>
     <string name="variability_of_your_note">Decibel Range Of Your Note</string>
+    <string name="note_held_for">🎶You held that note\n for %1$d seconds🎶</string>
 
     <!-- About Page -->
     <string name="about_title">SingLong</string>

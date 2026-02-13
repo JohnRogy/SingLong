@@ -21,7 +21,10 @@
     <string name="breath_control_description">Entraînez-vous à tenir une note.</string>
     <string name="information_button">Information</string>
     <string name="about_singlong">À propos SingLong</string>
-    <string name="notes_content">Remarques:\n- SingLong vous indiquera combien de secondes vous pouvez tenir une note.\n- Le curseur «Plage de décibels» vous permet de choisir une plage de décibels plus ou moins large pour la durée de la note.</string>
+    <string name="notes_content">Remarques:\n-
+            SingLong vous indique la durée pendant laquelle vous pouvez tenir une note.\n-
+            Le curseur «Plage de décibels» vous permet de choisir une plage de décibels plus ou moins large pour la durée de la note.\n-
+            Recalibrez si le niveau de bruit ambiant change. </string>
 
     <!-- Page 4: Breath Control -->
     <string name="calibrating_text">CALIBRAGE…\nVeuillez rester silencieux.</string>
@@ -38,6 +41,7 @@
     <string name="sing_or_hum_prompt">🎶Chantez ou fredonnez une note… Essayez de maintenir le même niveau de décibels.🎶</string>
     <string name="reset_timer_button">Réinitialiser\nle minuteur</string>
     <string name="variability_of_your_note">Plage de décibels de votre note</string>
+    <string name="note_held_for">🎶Vous avez tenu cette note\n pendant %1$d secondes🎶</string>
 
     <!-- About Page -->
     <string name="about_title">SingLong</string>
